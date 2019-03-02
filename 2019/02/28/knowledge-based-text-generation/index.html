@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新- Introduction早期的基于神经网络的文本生">
+<meta name="keywords" content="NLP,deep learning,NLG,dialogue system,common sense,papers">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于知识的对话系统">
+<meta property="og:url" content="http://yoursite.com/2019/02/28/knowledge-based-text-generation/index.html">
+<meta property="og:site_name" content="Platoneko&#39;s Notes">
+<meta property="og:description" content="开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新- Introduction早期的基于神经网络的文本生">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f2.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f3.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f4.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f5.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f6.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f7.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f8.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f9.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f10.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f11.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f12.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f13.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f14.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f15.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f16.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f17.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f18.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f19.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f20.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f21.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f22.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f23.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f24.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f25.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f26.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f27.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f28.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f29.png">
+<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f30.png">
+<meta property="og:updated_time" content="2019-03-02T17:07:29.740Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于知识的对话系统">
+<meta name="twitter:description" content="开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新- Introduction早期的基于神经网络的文本生">
+<meta name="twitter:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/02/28/knowledge-based-text-generation/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>基于知识的对话系统 | Platoneko's Notes</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Platoneko's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/28/knowledge-based-text-generation/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="platoneko">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Platoneko's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基于知识的对话系统
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-02-28 12:59:06" itemprop="dateCreated datePublished" datetime="2019-02-28T12:59:06+08:00">2019-02-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-03 01:07:29" itemprop="dateModified" datetime="2019-03-03T01:07:29+08:00">2019-03-03</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新-</p>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a><strong>Introduction</strong></h1><p>早期的基于神经网络的文本生成任务大多是纯数据驱动的基于Seq2Seq框架的（暴力）模型，甚至是直接将NMT任务的Encoder-Decoder框架搬过来，仅仅是换了个数据集进行调参（如今这种灌水肯定是不行了）。这样直接生搬硬套的模型虽然确实产生了一些有意思的结果，生成的文本看上去很接近自然语言，但是过于ambiguous往往缺乏有实质信息(informative)的内容。我们就从直觉出发，显然一个正常人在对话和写作过程会加入个人的经验、常识等超出上下文内容的信息，因此将外界知识引入是必不可少的。无论是对自然语言的理解（NLU）还是生成自然语言（NLG），知识的引入都肯定会使系统效果有显著提升。从训练数据上来看，我们要完成从对上下文的理解、推理最后到文本的生成，上下文中出现的一些实体（entity）隐含的关系、性质等信息往往要借助外界知识才能完善，这些关系性质仅仅从训练数据集中是无法获取和推理的，直接去拟合上下文的匹配其结果往往只能使系统学习到语法结构和一些最简单最基本的标准 response。</p>
+<p><br></p>
+<h1 id="Augmenting-End-to-End-Dialogue-System-with-Commonsense-Knowledge"><a href="#Augmenting-End-to-End-Dialogue-System-with-Commonsense-Knowledge" class="headerlink" title="Augmenting End-to-End Dialogue System with Commonsense Knowledge"></a><strong>Augmenting End-to-End Dialogue System with Commonsense Knowledge</strong></h1><p><a href="https://arxiv.org/pdf/1709.05453.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1709.05453.pdf</a></p>
+<blockquote>
+<p><strong>Motivation</strong></p>
+</blockquote>
+<p>在人类对话中，人们不仅仅只关注于对话内容本身，还要将对话中各种概念的相关信息集成在回复中。由于常识知识（commonsense knowledge）可以说是海量的，作者认为运用一个包含常识的外部记忆模块比传统方法中强迫系统去将这些海量的知识编码在模型参数中更为可靠。在论文中作者测试了用常识知识来增强End2End的对话系统。</p>
+<blockquote>
+<p><strong>Model</strong></p>
+</blockquote>
+<p>论文的数据集是形如 &lt;$message$, $response$, $label$&gt; 的三元组，$label$ 用来标识 $response$ 是否和 $message$ 匹配，目标模型其实是一个二分类模型，因此我们主要关注 commonsense knowledge 的 embedding 和 encoding。</p>
+<p>论文的commonsense knowledge采用通过ConceptNet获取的三元组 &lt;$concept1$, $relation$, $concept2$&gt; 作为assertion并假设commonsense knowledge base由大量关于concepts $C$ 的 assertions $A$ 组成。值得注意的是，concept $c$ 可以是单个单词也可以是多个单词。作者构建了一个以 $c$ 作为key，以所有包含 $c$（可以是 $concept1$ 或 $concept2$）的assertions作为value的字典。设 $A_x$ 为message $x$ 中所有相关的assertions的集合，作者通过n-gram matching的方法将match到的concept对应的所有assertions加入到 $A_x$。</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png"></div>
+
+<p>论文使用LSTM来encoding  $A_x$ 中的所有assertions。每个形如 &lt;$c_1$, $r$, $c_2$&gt; 的 $a$ 都被视为一个tokens序列，e.g.对于multi-word concept $c_1$, $c_2$, $a$ = $[c_{11}, c_{12}, c_{13}…, r, c_{21}, c_{22}, c_{23}…]$ 。作者将concept和relation中的词当作常规词一并加入vocabulary $V$ 中进行embedding。</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f2.png"></div>
+
+<p>我们不详细讨论模型后面的task-orient部分。但是从上图可以看到，作者没有显式计算assertions $a$ 与message $x$ 的相关性score，而是分别计算response $y$ 与 message $x$ 和 assertions $a$ 的score。可以认为assertions $a$ 的集成，<strong>其本质就是给原模型加入了一个response要与message中出现的concept1的通过某种relation关联的concept2相关的先验偏好。</strong>（个人认为在对message进行encoding的过程中也有必要加入commonsense knowledge，因为前面的词的相关concept可能对后面的词的语义产生影响。）</p>
+<p>之后作者还提出了一个变种：</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f3.png"></div>
+
+<p>其中 $p_i$ 是 $x$ 对 $a_i$ 的dot-product attention score，使与message context相关性高的assertion具有更大的权值。作者在这里把 $A_x$ 视作Memory Networks的memory component。</p>
+<p><br></p>
+<h1 id="Commonsense-Knowledge-Aware-Conversation-Generation-with-Graph-Attention"><a href="#Commonsense-Knowledge-Aware-Conversation-Generation-with-Graph-Attention" class="headerlink" title="Commonsense Knowledge Aware Conversation Generation with Graph Attention"></a>Commonsense Knowledge Aware Conversation Generation with Graph Attention</h1><p><a href="https://www.ijcai.org/proceedings/2018/0643.pdf" target="_blank" rel="noopener">https://www.ijcai.org/proceedings/2018/0643.pdf</a></p>
+<p>（Paperweekly上正好有对这篇paper的解读，很多内容直接搬运了）</p>
+<blockquote>
+<p><strong>Motivation</strong></p>
+</blockquote>
+<p>在以前的工作中，对话生成的信息源是文本与对话记录。但是这样一来，如果遇到OOV的词，模型往往难以生成合适的、有信息量的回复，而会产生一些低质量的、模棱两可的回复，这种回复往往质量不高。</p>
+<p>为了解决这个问题，有一些利用常识知识图谱生成对话的模型被陆续提出。当使用常识性知识图谱时，由于具备背景知识，模型更可能理解用户的输入，这样就能生成更加合适的回复。但是，这些结合了文本、对话记录、常识知识图谱的方法，往往只使用了单一三元组，而忽略了一个子图的整体语义，会导致得到的信息不够丰富。</p>
+<p>为了解决这些问题，文章提出了一种<strong>基于常识知识图谱的对话模型</strong>（commonsense knowledge aware conversational model, CCM）来理解对话，并且产生信息丰富且合适的回复。</p>
+<p><strong>本文提出的方法利用了大规模的常识性知识图谱。</strong> 首先是理解用户请求，找到可能相关的知识图谱子图；再利用静态图注意力（static graph attention）机制，结合子图来理解用户请求；最后使用动态图注意力（dynamic graph attention）机制来读取子图，并产生合适回复。</p>
+<p>通过这样的方法，本文提出的模型可以生成合适的、有丰富信息的对话，提高对话系统的质量。</p>
+<blockquote>
+<p><strong>Model</strong></p>
+</blockquote>
+<p><strong>1. CCM模型</strong></p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f4.png"></div>
+
+<p>如图所示，基于n个词的输入，会输出m个词作为回复，模型的目的就是预估这么一个概率分布 $P(Y|X,G)=\Pi^m_{t=1}P(y_t|y_{&lt;t},X,G)$，即将图信息 $G$ 加入到概率分布的计算中。</p>
+<p>在信息读取时，根据每个输入的词 $x$，找到常识知识图谱中对应的子图（若没有对应的子图，则会生成一个特殊的图 <em>Not_A_Fact</em>），每个子图又包含若干三元组。</p>
+<p><strong>2. 知识编译模块（Knowledge Interpreter）</strong></p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f5.png"></div>
+
+<p>如图所示，当编译到”rays”时，会把这个词在知识图谱中相关的子图得到，并生成子图向量。每一个子图都包含了key entity（即这里的”rays”），以及这个”rays”的邻居实体和相连关系。</p>
+<p>对于词”of”，由于无法找到对应子图，所以就采用特殊子图 <em>Not_A_Fact</em> 来编译。之后采用基于静态注意力机制，CCM会将子图映射为向量，然后把词向量 $w(x_t)$ 和 $g_i$ 拼接作为encoder中GRU的输入。</p>
+<p>对于静态图注意力机制，CCM将子图中所有三元组 $k_n=(h_n, r_n, t_n)$ 考虑进来：</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f6.png"></div>
+
+<p>其中三元组 $k_n=(h_n, r_n, t_n)$ 选用<strong>TranE</strong>进行embedding。</p>
+<p><strong>3. 知识生成模块（Knowledge Aware Generator）</strong></p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f7.png"></div>
+
+<p>在生成时，不同于静态图注意力机制，模型会读取所有相关的子图，而不是当前词对应的子图，并计算decoder state $s_t$ 时使用每一个子图 $g_i$ 的概率：</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f8.png"></div>
+
+<p>之后模型会计算选择decoder state $s_t$ 时每个子图 $g_i$ 中选择一个三元组 $k_j$ 来生成单词的概率：</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f9.png"></div>
+
+<p>生成时，会根据计算结果，来选择是生成通用字（generic word）还是子图中的实体：</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f10.png"></div>
+
+<p><strong>4. 损失函数</strong></p>
+<p>损失函数为预期输出与实际输出的交叉熵，除此之外，为了监控选择通用词还是实体的概率，又增加了一个交叉熵：</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f11.png"></div>
+
+<blockquote>
+<p><strong>Experiment</strong></p>
+</blockquote>
+<p><strong>实验相关细节</strong></p>
+<p>常识性知识图谱选用了ConceptNet，对话数据集选用了reddit的10M single-round 对话数据集，如果一个post-response不能以一个三元组表示（一个实体出现于post，另一个出现于response）,就将这个数据去除（filter the original corpus with the knowledge triplets）。</p>
+<p>然后对剩下的对话数据分为四类，一类是高频词，即每一条post的每一个词，都是最高频的25%的词；一类是中频词即25%-75%；一类是低频词即高于75%；最后一类是OOV词，每一条post包含有OOV词。</p>
+<p>基线系统选择了如下三个：只从对话数据中生成response的seq2seq模型、存储了以TranE形式表示知识图谱的MemNet模型<a href="https://arxiv.org/pdf/1702.01932.pdf" target="_blank" rel="noopener">[Ghazvininejad et al., 2017]</a>、从三元组中copy一个词或生成通用词的CopyNet模型<a href="https://arxiv.org/pdf/1709.04264.pdf" target="_blank" rel="noopener">[Zhu et al., 2017]</a>。</p>
+<p>而选用metric的时候，采用了刻画回复内容是否语法正确且贴近主题的perplexity，以及有多少知识图谱实体被生成的entity score。</p>
+<p><strong>实验结果</strong></p>
+<p>如下图所示为根据perplexity和entity score进行的性能比较，可见CCM的perplexity最低，且选取entity的数量最多。并且，在低频词时，选用的entity更多，这表示在训练时比较罕见的词（实体）会需要更多的背景知识来生成答复。</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f12.png"></div>
+
+<p>另外，作者还采用crowdsourcing的方式来人为审核response的质量，并采用了两种度量值：appropriateness（内容是否语法正确，是否与主题相关，是否有逻辑）和 informativeness（内容是否提供了post之外的新信息）。</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f13.png"></div>
+
+<p>从上图可见，CCM对于三个基线系统来说，都有将近60%的回复是更优的。并且在OOV数据集上，CCM比seq2seq不知道高到哪里去了，这是由于CCM对于这些低频词或未登录词，可以用知识图谱去补全，而seq2seq没有这样的知识来源。</p>
+<p>如下图所示，当在post中遇到未登录词”breakable”时，seq2seq和MemNet都只能输出一些通用的、模棱两可的、毫无信息量的回复。CopyNet能够利用知识图谱输出一些东西，但是并不合适。而CCM却可以输出一个合理的回复。</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f14.png"></div>
+
+<p><br></p>
+<h1 id="Knowledge-Diffusion-for-Neural-Dialogue-Generation"><a href="#Knowledge-Diffusion-for-Neural-Dialogue-Generation" class="headerlink" title="Knowledge Diffusion for Neural Dialogue Generation"></a>Knowledge Diffusion for Neural Dialogue Generation</h1><p><a href="http://aclweb.org/anthology/P18-1138" target="_blank" rel="noopener">http://aclweb.org/anthology/P18-1138</a></p>
+<blockquote>
+<p><strong>Motivation</strong></p>
+</blockquote>
+<p>和前面论文的描述类似，对话系统需要加入common knowledge，就不再赘述。论文的不同之处在于，作者认为对话系统应该具备通过当前会话中包含的facts发散到基于知识图谱的相似实体上：</p>
+<ol>
+<li><strong><em>facts matching</em></strong>： 尽管有些对话是与facts相关的询问（inquiries），即主体和关系可以很容易被识别出来，但是对于某些对话，主体和关系是难以捉摸的，给准确的facts matching造成麻烦。下图展示了一个示例：Item 1 和 2 都在谈论电影”Titanic”，其中item 1是个典型的问答式对话，而item 2则是一个知识相关的没有任何显式关系的聊天式对话（chit-chat）。在item 2中去定义准确的fact match是非常困难的。</li>
+</ol>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f15.png"></div>
+
+<ol>
+<li><strong><em>entity diffusion</em></strong>：另一个显著的现象是，对话常常会从一个实体转移到另一个实体。如item 3 和 4 都和实体”Titanic”有关，然而回复中的实体都是其他的类似的电影。像这样的发散式关系，能够在现有的知识图谱三元组中去捕捉到它们的情况是十分罕见的。</li>
+</ol>
+<p>因此，论文提出了一个神经知识发散（Neural Knowledge Diffusion, NKD）对话系统。NKD先去匹配对话与相关的事实（facts），之后匹配到的事实会用来发散到相似的实体，最后通过获取到的所有知识项来生成回复。</p>
+<blockquote>
+<p><strong>Model</strong></p>
+</blockquote>
+<p><strong>Overview</strong></p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f16.png"></div>
+
+<p>论文构建了一个多轮对话（Multi-turn）模型。模型由四部分组成：</p>
+<ol>
+<li>一个将输入utterance $X$ 编码成向量的encoder。</li>
+<li>一个用来记录整个会话中对话状态的上下文RNN。它将utterance的向量作为输入，并在每一轮对话中输出一个用来指引生成回复的向量。</li>
+<li>一个用来生成response $Y$ 的decoder。</li>
+<li>一个用来在每轮对话执行事实匹配（facts matching）和实体发散（diffuses to similar entities）的知识搜索器（knowledge retriever）。</li>
+</ol>
+<p><strong>1. Encoder</strong></p>
+<p>为了捕捉不同层面的信息，作者通过两个独立的RNN来学习utterance的表示，得到两个隐藏状态序列：<br>$H^C=(h_1^C, h_2^C, …, h_{Nx}^C)$ 和 $H^K=(h_1^K, h_2^K, …, h_{Nx}^K)$ 。<br>$h_{Nx}^C$ 作为之后用来追踪对话状态的上下文RNN的输入；$h_{Nx}^K$ 应用在knowledge retriever中，用来将知识实体关系编码进输入的utterance。上图 $X_1$ 中”director”和”Titanic”就是knowledge elements。</p>
+<p><strong>2. Knowledge Retriver</strong></p>
+<p>Knowledge retriever从知识库中抽取固定数量的facts并指出它们的重要程度。</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f17.png"></div>
+
+<ol>
+<li><strong>Facts Matching</strong></li>
+</ol>
+<p>给定一个input utterance $X$，通过字符串匹配（string matching）、实体链接（entity linking）或命名实体识别（named entity recognition）来从知识库和对话历史中抽取$N_f$个相关facts $F = \{f_1,f_2,…,f_{N_f}\}$。$F$ 中的每个triplet的embedding通过简单地将entities和relation的embedding取均值得到 $h_f = \{h_{f_1},h_{f_2},…,h_{f_{N_f}}\}$。</p>
+<p>之后计算每个fact和input utterance之间的相关系数（范围从0到1）：</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f18.png"></div>
+
+<p>对于多轮对话，出现在之前的utterance的实体也会继承并保存在 $F$ 中。作者通过加权平均来计算相关事实表示（<em>relevant fact representation</em>） $C^f$:</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f19.png"></div>
+
+<ol>
+<li><strong>Entity Diffusion</strong></li>
+</ol>
+<p>作者计算了知识库中的所有实体（除了已经在之前的utterance出现过的实体）与相关fact的相似系数 $r^e$（范围从0到1）：</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f20.png"></div>
+
+<p>这里$e^k$是entity embedding。得分最高的$N_e$个实体被视作相似实体。相似实体表示（<em>similar entity representation</em>）$C^s$：</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f21.png"></div>
+
+<p><strong>3. Context RNN</strong></p>
+<p>Context RNN 记录了utterance (sentence) level对话状态。Context RNN考虑了utterance表示和知识表示。</p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f22.png"></div>
+
+<p><strong>4. Decoder</strong></p>
+<script type="math/tex; mode=display">C=[h_t^T, C^f, C^s]</script><script type="math/tex; mode=display">R=[r^f, r^e]</script><ol>
+<li><strong>Vanilla decoder</strong> 仅通过 $C$, $R$ 产生response $Y$：</li>
+</ol>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f23.png"></div>
+
+<ol>
+<li><strong>Probabilistic gated decoder</strong> 使用了一个门控变量 $z_t$ 来表明位于第t个位置的词应该从普通词中产生还是从知识实体中产生：</li>
+</ol>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f24.png"></div>
+
+<p>其中 $p(z_t|s_t;\theta)$ 通过逻辑回归来计算；$p(y_t|R,z_t=1;\theta)$ 近似于知识项（knowledge items）的相关系数。</p>
+<p>考虑到在生成回复中，如果一个实体被反复使用，生成的回复的多样性将会减小。因此，当一个知识项出现在回复中时，其相应的相关系数应该减小，以避免一个item出现多次。为此，作者提出了两种范围追踪机制（coverage tracking mechanisms）：1） <strong><em>Mask coefficient tracker</em></strong> 直接将出现的item的系数减少到0来保证其不会在回复中再次出现；2） <strong><em>Coeffient attenuation tracker</em></strong> ：</p>
+<script type="math/tex; mode=display">i_t=DNN(s_t, y_{t-1},R_0,R_{t-1}),</script><script type="math/tex; mode=display">R_t=i_t{\cdot}R_{t-1}</script><blockquote>
+<p><strong>Experiment</strong></p>
+</blockquote>
+<p><strong>Detail</strong></p>
+<p>encoder使用512d Bi-LSTM；context RNN使用1024d LSTM；普通词汇、实体词、关系词共享同一个512d word embedding；使用Adam算法进行参数优化，梯度截断设为5.0。</p>
+<p>对比实验使用了3个baseline模型：</p>
+<ul>
+<li><p>Seq2Seq：最基本的RNN encoder-decoder模型。</p>
+</li>
+<li><p>HERD：一个分级RNN encoder-decoder模型。</p>
+</li>
+<li><p>GenDS:一个生成式神经网络对话系统，具有从输入文本和相关知识库生成回复的功能<a href="https://arxiv.org/pdf/1709.04264.pdf" target="_blank" rel="noopener">[Zhu et al., 2017]</a>。</p>
+</li>
+</ul>
+<p>尝试了3种NKD的变种模型：</p>
+<ul>
+<li><p>NKD-ori：使用基础的decoder和一个mask coefficient tracker。</p>
+</li>
+<li><p>NKD-gated：加入了probabilistic gated decoder和一个mask coefficient tracker。</p>
+</li>
+<li><p>NKD-atte：使用基础的decoder和一个coefficient attenuation tracker。</p>
+</li>
+</ul>
+<p><strong>Result</strong></p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f25.png" width="400"></div>
+
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f26.png" width="400"></div>
+
+<p><br></p>
+<h1 id="Mem2Seq-Effective-Incorporating-Knowledge-Based-into-End-to-End-Task-Orient-Dialog-Systems"><a href="#Mem2Seq-Effective-Incorporating-Knowledge-Based-into-End-to-End-Task-Orient-Dialog-Systems" class="headerlink" title="Mem2Seq: Effective Incorporating Knowledge Based into End-to-End Task-Orient Dialog Systems"></a>Mem2Seq: Effective Incorporating Knowledge Based into End-to-End Task-Orient Dialog Systems</h1><p><a href="https://arxiv.org/pdf/1804.08217.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1804.08217.pdf</a></p>
+<blockquote>
+<p><strong>Motivation</strong></p>
+</blockquote>
+<p>近来，很多端到端对话系统都引入了基于注意力机制的copy-mechanism，将单词直接从输入文本copy到输出回复。使用这样的机制，使得即便是对话历史中出现了unknown的token，模型也能产生正确相关的实体词。</p>
+<p>然而，尽管copy-mechanism被证明是很成功的，但它同样面临这两个主要问题：1）出于对RNN不适合处理超长文本的限制的考虑，将外部KB信息引入RNN隐藏状态的有效性有待商榷。 2）处理长文本序列的时间开销巨大，尤其是引入注意力机制之后。</p>
+<p>另一方面，end-to-end memory networks<a href="https://arxiv.org/pdf/1503.08895.pdf" target="_blank" rel="noopener">[Sukhbaatar et al., 2015]</a>是一个在巨大外部记忆进行循环attention操作的模型。它将外部记忆编入几个embedding矩阵，利用query向量反复读取记忆。这种方法可以记忆外部KB信息，并且<strong>快速地编码长对话历史</strong>。另外这种multi-hop的机制从实验结果来看，其对于推理任务是极其重要的。但是，MemNN只能从预定义的候选池中选择回复而不是逐个生成单词；而且对记忆的query需要显式设计而不是通过模型自行学得，也缺少时下流行的copy机制。</p>
+<p>为了解决这些问题，论文提出了一个新的框架Mem2Seq，来通过端到端的方法学习生成面向特定任务的对话。总的来说，论文中的模型将现有的MemNN框架扩展为一个文本生成式架构，使用全局multi-hop注意力从历史对话和KB中直接copy单词生成回复。</p>
+<blockquote>
+<p><strong>Model</strong></p>
+</blockquote>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f27.png"></div>
+
+<p>模型由两部分组成：MemNN encoder生成对话历史的向量表示；memory decoder从记忆中读取和copy来生成回复。</p>
+<p>对话历史定义为一个tokens序列：$X = \{ x_1, \dots, x_n, sentinel \}$ , $sentinel$ 是一个标志字符；</p>
+<p>KB元组定义为 $B=\{ b_1, \dots, b_l \}$；$U=[B;X]$;</p>
+<p>$Y=\{ y_1, \dots, y_m \}$ 为预期输出序列;</p>
+<p>另设一个和预期输出对其的预期指针序列：$PTR=\{ ptr_1, \dots, ptr_m \}$<br>ptr_i = </p>
+<script type="math/tex; mode=display">
+ptr_i = 
+\begin{cases}
+\max (z) \,\,\,\, if \exists z \, s.t.\, y_i=u_z\\
+n+l+1 \,\,\,\, otherwise
+\end{cases}</script><p><strong>Memory Encoder</strong></p>
+<p>encoder只用来加载和编码dialogue history $X$。</p>
+<p>MemNN中的memories是一系列可训练的embedding矩阵 $C = \{ C^1, \dots , C^{K+1} \}$，每个矩阵将tokens映射为vectors。</p>
+<p>$q^k$ 为query vector； $q^1$ 固定为零向量。</p>
+<p>模型将会循环K个hop：</p>
+<script type="math/tex; mode=display">p_i^k = Softmax((q^k)^T C_i^k)</script><script type="math/tex; mode=display">C_i^k = C^k (x_i)</script><script type="math/tex; mode=display">o^k = \sum_i p_i^k C_i^{k+1}</script><script type="math/tex; mode=display">q^{k+1} = q^k + o^k</script><p>原版MemNN对memory有两个embedding matrices：input embedding matrix $A$ 和output embedding matrix $C$，分别表示存入memory时输入单词的embedding和读取memory时隐语义的embedding。Mem2Seq中实际上也有上述两个embedding matrices，并采用了MemNN中的adjacent weight tying策略，即 $A^{k+1}=C^k$。</p>
+<p>Encoder最后输出 $o^K$ 作为decoder的输入。（作者提供的源代码是将 $q^{K+1}$ 作为decoder输入）。</p>
+<p><strong>Memory Decoder</strong></p>
+<p>Decoder包含一个GRU和一个MemNN，MemNN加载dialogue history和KB的拼接 $U$。<strong>Decoder的MemNN和encoder的MemNN不共享参数</strong>。</p>
+<script type="math/tex; mode=display">h_t=GRU(C^1(\hat{y}_{t-1}),h_{t-1})</script><p>Encoder的输出 $o^K$ 作为GRU的初始隐藏状态 $h_0$。</p>
+<p>t时刻，GRU的隐藏状态 $h_t$ 作为decoder MemNN的query vector，经过MemNN的K个hop，得到decoder memory output $o^K$。之后decoder会生成vocab和pointer两种分布：</p>
+<script type="math/tex; mode=display">P_{vocab}(\hat{y}_t)=Softmax(W_1[h_t;o^1])</script><script type="math/tex; mode=display">P_{ptr}(\hat{y}_t)=p^K</script><p>$o^1$ 为decoder MemNN的hop 1的memory output，$p^K$ 为decoder MemNN的hop K的attention score。</p>
+<p><strong>Memory Content</strong></p>
+<p>Memory整合了word-level的dialogue history和KB tuples。每个KB tuple的representation是subject, relation, object的embedding之和。如果pointer指向KB tuple，则输出为tuple的object。</p>
+<blockquote>
+<p><strong>Experiment</strong></p>
+</blockquote>
+<p><strong>Detail</strong></p>
+<p>使用Adam optimizer，学习率在1e-3到1e-4之间。MemNN采用了hops K =  1, 3, 6三种来对比实验。Dropout rate在0.1到0.4之间，同时还将部分输入word mask成unknown token来模拟OOV情况。</p>
+<p><strong>Result</strong></p>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f28.png"></div>
+
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f29.png" width="400"></div>
+
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f30.png" width="400"></div>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/NLP/" rel="tag"># NLP</a>
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/NLG/" rel="tag"># NLG</a>
+          
+            <a href="/tags/dialogue-system/" rel="tag"># dialogue system</a>
+          
+            <a href="/tags/common-sense/" rel="tag"># common sense</a>
+          
+            <a href="/tags/papers/" rel="tag"># papers</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/27/markdown-math-expression/" rel="next" title="markdown数学表达式">
+                <i class="fa fa-chevron-left"></i> markdown数学表达式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">platoneko</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Augmenting-End-to-End-Dialogue-System-with-Commonsense-Knowledge"><span class="nav-number">2.</span> <span class="nav-text">Augmenting End-to-End Dialogue System with Commonsense Knowledge</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Commonsense-Knowledge-Aware-Conversation-Generation-with-Graph-Attention"><span class="nav-number">3.</span> <span class="nav-text">Commonsense Knowledge Aware Conversation Generation with Graph Attention</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Knowledge-Diffusion-for-Neural-Dialogue-Generation"><span class="nav-number">4.</span> <span class="nav-text">Knowledge Diffusion for Neural Dialogue Generation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mem2Seq-Effective-Incorporating-Knowledge-Based-into-End-to-End-Task-Orient-Dialog-Systems"><span class="nav-number">5.</span> <span class="nav-text">Mem2Seq: Effective Incorporating Knowledge Based into End-to-End Task-Orient Dialog Systems</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">platoneko</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+      for (i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+<style>
+.MathJax_Display {
+  overflow: auto hidden;
+}
+</style><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
