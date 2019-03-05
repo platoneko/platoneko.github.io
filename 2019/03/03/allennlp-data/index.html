@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext">
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="dataset_reader  class DatasetReader(Registrable)Returns an Iterable containing all the instances in the specified dataset. If self.lazy is False, this calls self._read(), ensures that the result is a">
+<meta name="keywords" content="NLP,AllenNLP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AllenNLP源码解读之data">
+<meta property="og:url" content="http://yoursite.com/2019/03/03/allennlp-data/index.html">
+<meta property="og:site_name" content="Platoneko&#39;s Notes">
+<meta property="og:description" content="dataset_reader  class DatasetReader(Registrable)Returns an Iterable containing all the instances in the specified dataset. If self.lazy is False, this calls self._read(), ensures that the result is a">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/img/allennlp-data/allennlp-data-f1.png">
+<meta property="og:image" content="http://yoursite.com/img/allennlp-data/allennlp-data-f2.png">
+<meta property="og:image" content="http://yoursite.com/img/allennlp-data/allennlp-data-f3.png">
+<meta property="og:image" content="http://yoursite.com/img/allennlp-data/allennlp-data-f4.png">
+<meta property="og:updated_time" content="2019-03-05T11:19:45.383Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AllenNLP源码解读之data">
+<meta name="twitter:description" content="dataset_reader  class DatasetReader(Registrable)Returns an Iterable containing all the instances in the specified dataset. If self.lazy is False, this calls self._read(), ensures that the result is a">
+<meta name="twitter:image" content="http://yoursite.com/img/allennlp-data/allennlp-data-f1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/03/03/allennlp-data/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>AllenNLP源码解读之data | Platoneko's Notes</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Platoneko's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">A platonic fantast learning AI</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/03/allennlp-data/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="platoneko">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Platoneko's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AllenNLP源码解读之data
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-03 18:43:32" itemprop="dateCreated datePublished" datetime="2019-03-03T18:43:32+08:00">2019-03-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-05 19:19:45" itemprop="dateModified" datetime="2019-03-05T19:19:45+08:00">2019-03-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/AllenNLP/" itemprop="url" rel="index"><span itemprop="name">AllenNLP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="dataset-reader"><a href="#dataset-reader" class="headerlink" title="dataset_reader"></a><strong>dataset_reader</strong></h1><div align="center"><img src="/img/allennlp-data/allennlp-data-f1.png" ,="" height="200"></div>
+
+<h2 id="class-DatasetReader-Registrable"><a href="#class-DatasetReader-Registrable" class="headerlink" title="class DatasetReader(Registrable)"></a>class <code>DatasetReader(Registrable)</code></h2><p>Returns an <code>Iterable</code> containing all the instances in the specified dataset.</p>
+<p>If <code>self.lazy</code> is False, this calls <code>self._read()</code>, ensures that the result is a list, then returns the resulting list.</p>
+<p>If <code>self.lazy</code> is True, this returns an object whose <code>__iter__</code> method calls <code>self._read()</code> each iteration. In this case your implementation of <code>_read()</code> must also be lazy (that is, not load all instances into memory at once), otherwise you will get a <code>ConfigurationError</code>.</p>
+<p><strong>In either case, the returned <code>Iterable</code> can be iterated over multiple times.</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- lazy: bool</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ __init__(self, lazy: bool = False)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ read(self, file_path: str) -&gt; Iterable[Instance]</span><br></pre></td></tr></table></figure>
+<!-- more -->
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ _read(self, file_path: str) -&gt; Iterable[Instance] &lt;interface&gt;</span><br></pre></td></tr></table></figure>
+<p>用户自行重载的接口方法，用来将数据集文本转换为Instance集合。建议实现为生成器函数以使用lazy模式载入数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ text_to_instance(self, *inputs) -&gt; Instance &lt;interface&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="class-LazyInstances-Iterable"><a href="#class-LazyInstances-Iterable" class="headerlink" title="class _LazyInstances(Iterable)"></a>class <code>_LazyInstances(Iterable)</code></h2><p>An <code>Iterable</code> that just wraps a thunk for generating instances and calls it for each call to <code>__iter__</code>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- instance_generator: Callable[[], Iterator[Instance]]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ __init__(self, instance_generator: Callable[[], Iterator[Instance]])</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ __iter__(self) -&gt; Iterator[Instance]</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<h1 id="vocabulary"><a href="#vocabulary" class="headerlink" title="vocabulary"></a><strong>vocabulary</strong></h1><div align="center"><img src="/img/allennlp-data/allennlp-data-f2.png" ,="" height="300"></div>
+
+<h2 id="class-Vocabulary-Registrable"><a href="#class-Vocabulary-Registrable" class="headerlink" title="class Vocabulary(Registrable)"></a>class <code>Vocabulary(Registrable)</code></h2><p>A Vocabulary <strong>maps strings to integers</strong>, allowing for strings to be mapped to an out-of-vocabulary token.</p>
+<p>Vocabularies are fit to a particular dataset, which we use to decide which tokens are in-vocabulary.</p>
+<p>Vocabularies also <strong>allow for several different namespaces</strong>, so you can have separate indices for ‘a’ as a word, and ‘a’ as a character, for instance, and so <strong>we can use this object to also map tag and label strings to indices</strong>, for a unified :class:<code>~.fields.field.Field</code> API. <strong>Most of the methods on this class allow you to pass in a namespace</strong>; by default we use the ‘tokens’ namespace, and you can omit the namespace argument everywhere and just use the default.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _padding_token: str = DEFAULT_PADDING_TOKEN</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _oov_token: str = DEFAULT_OOV_TOKEN</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _non_padded_namespaces: Set[str]</span><br></pre></td></tr></table></figure>
+<p>Default (“<em>tags”, “</em>labels”)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _token_to_index: _TokenToIndexDefaultDict</span><br></pre></td></tr></table></figure>
+<p>token-&gt;index (namespace dependent) Vocabulary的本质！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _index_to_token: _IndexToTokenDefaultDict</span><br></pre></td></tr></table></figure>
+<p>index-&gt;token (namespace dependent) 需要的时候还要变回来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _retained_counter: Optional[Dict[str, Dict[str, int]]] = None</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+ __init__(self,</span><br><span class="line">           counter: Dict[str, Dict[str, int]] = None,</span><br><span class="line">           min_count: Dict[str, int] = None,</span><br><span class="line">           max_vocab_size: Union[int, Dict[str, int]] = None,</span><br><span class="line">           non_padded_namespaces: Iterable[str] =DEFAULT_NON_PADDED_NAMESPACES,</span><br><span class="line">           pretrained_files: Optional[Dict[str, str]] = None,</span><br><span class="line">           only_include_pretrained_words: bool = False,</span><br><span class="line">           tokens_to_add: Dict[str, List[str]] = None,</span><br><span class="line">           min_pretrained_embeddings: Dict[str, int] = None)</span><br></pre></td></tr></table></figure>
+<p><strong>init</strong>在调用self._extend之前只建立了空Vocabulary，要通过self._extend扩充Vocabulary。</p>
+<p>counter用于统计所有Instance中的token出现次数，与min_count相关。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ save_to_files(self, directory: str) -&gt; None</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">+ @classmethod </span><br><span class="line">  from_files(cls, directory: str) -&gt; &apos;Vocabulary&apos;</span><br></pre></td></tr></table></figure>
+<p>Loads a <code>Vocabulary</code> that <strong>was serialized using <code>save_to_files</code></strong>.</p>
+<p>构造Vocabulary实例vocab后调用vocab.set_from_file来扩充Vocabulary。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+ set_from_file(self,</span><br><span class="line">                filename: str,</span><br><span class="line">                is_padded: bool = True,</span><br><span class="line">                oov_token: str = DEFAULT_OOV_TOKEN,</span><br><span class="line">                namespace: str = &quot;tokens&quot;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">+ @classmethod</span><br><span class="line">  from_instances(cls,</span><br><span class="line">                 instances: Iterable[&apos;adi.Instance&apos;],</span><br><span class="line">                 min_count: Dict[str, int] = None,</span><br><span class="line">                 max_vocab_size: Union[int, Dict[str, int]] = None,</span><br><span class="line">                 non_padded_namespaces: Iterable[str] = DEFAULT_NON_PADDED_NAMESPACES,</span><br><span class="line">                 pretrained_files: Optional[Dict[str, str]] = None,</span><br><span class="line">                 only_include_pretrained_words: bool = False,</span><br><span class="line">                 tokens_to_add: Dict[str, List[str]] = None,</span><br><span class="line">                 min_pretrained_embeddings: Dict[str, int] = None) -&gt; &apos;Vocabulary&apos;</span><br></pre></td></tr></table></figure>
+<p>Constructs a vocabulary given a collection of <code>Instances</code> and some parameters. We count all of the vocabulary items in the instances, then pass those counts and the other parameters, to :func:<code>__init__</code>.</p>
+<p>一般来说，第一次训练模型时用的都是from_instances来创建Vocabulary。from_instances还可以加入pretrained files里面的词汇。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">+ @classmethod</span><br><span class="line">  from_params(cls, params: Params, instances: Iterable[&apos;adi.Instance&apos;] = None)</span><br></pre></td></tr></table></figure>
+<p>There are two possible ways to build a vocabulary; from a collection of instances, using :func:<code>Vocabulary.from_instances</code>, or from a pre-saved vocabulary, using :func:<code>Vocabulary.from_files</code>. You can also extend pre-saved vocabulary with collection of instances using this method. This method wraps these options, allowing their specification from a <code>Params</code> object, generated from a JSON configuration file.</p>
+<p><code>instances: Iterable[&#39;adi.Instance&#39;], optional</code><br>If <code>params</code> doesn’t contain a <code>directory_path</code> key, the <code>Vocabulary</code> can be built directly from a collection of instances (i.e. a dataset). If <code>extend</code> key is set False, dataset instances will be ignored and final vocabulary will be one loaded from <code>directory_path</code>. If <code>extend</code> key is set True, dataset instances will be used to extend the vocabulary loaded from <code>directory_path</code> and that will be final vocabulary used.</p>
+<p>params list:</p>
+<p><code>type: str = None</code></p>
+<p><code>extend: bool = False</code></p>
+<p><code>directory_path: str = None</code></p>
+<p><code>min_count: Dict[str, int] = None</code></p>
+<p><code>max_vocab_size: Union[int, Dict[str, int]] = None</code></p>
+<p><code>non_padded_namespaces: Iterable[str] = DEFAULT_NON_PADDED_NAMESPACES</code></p>
+<p><code>pretrained_files: Dict[str, str] = dict()</code></p>
+<p><code>min_pretrained_embeddings: Dict[str, int] = None</code></p>
+<p>载入pretrained embedding文件中的token到Vocabulary时载入的token数目；若 <code>None</code> 则全部载入。</p>
+<p><code>only_include_pretrained_words: bool = False</code></p>
+<p>若为 <code>True</code> 则只载入pretrained files中的且在dataset中出现次数大于 <code>min_count</code> 的token。</p>
+<p><code>tokens_to_add: Dict[str, int] = None</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+ _extend(self,</span><br><span class="line">          counter: Dict[str, Dict[str, int]] = None,</span><br><span class="line">          min_count: Dict[str, int] = None,</span><br><span class="line">          max_vocab_size: Union[int, Dict[str, int]] = None,</span><br><span class="line">          non_padded_namespaces: Iterable[str] = DEFAULT_NON_PADDED_NAMESPACES,</span><br><span class="line">          pretrained_files: Optional[Dict[str, str]] = None,</span><br><span class="line">          only_include_pretrained_words: bool = False,</span><br><span class="line">          tokens_to_add: Dict[str, List[str]] = None,</span><br><span class="line">          min_pretrained_embeddings: Dict[str, int] = None) -&gt; None</span><br></pre></td></tr></table></figure>
+<p> This method can be used for extending already generated vocabulary. It takes same parameters as Vocabulary initializer. The token2index and indextotoken mappings of calling vocabulary will be retained. It is an inplace operation so None will be returned.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ extend_from_instances(self,</span><br><span class="line">                        params: Params,</span><br><span class="line">                        instances: Iterable[&apos;adi.Instance&apos;] = ()) -&gt; None</span><br></pre></td></tr></table></figure>
+<p>Extends an already generated vocabulary using a collection of instances.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ is_padded(self, namespace: str) -&gt; bool</span><br></pre></td></tr></table></figure>
+<p>Returns whether or not there are padding and OOV tokens added to the given namespace.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ add_token_to_namespace(self, token: str, namespace: str = &apos;tokens&apos;) -&gt; int</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ get_index_to_token_vocabulary(self, namespace: str = &apos;tokens&apos;) -&gt; Dict[int, str]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ get_token_to_index_vocabulary(self, namespace: str = &apos;tokens&apos;) -&gt; Dict[str, int]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ get_token_index(self, token: str, namespace: str = &apos;tokens&apos;) -&gt; int</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ get_token_from_index(self, index: int, namespace: str = &apos;tokens&apos;) -&gt; str</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ get_vocab_size(self, namespace: str = &apos;tokens&apos;) -&gt; int</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ print_statistics(self) -&gt; None</span><br></pre></td></tr></table></figure>
+<p>Show Top 10 most frequent tokens, Top 10 longest tokens, Top 10 shortest tokens in each namespace.</p>
+<h2 id="class-NamespaceDependentDefaultDict-defaultdict"><a href="#class-NamespaceDependentDefaultDict-defaultdict" class="headerlink" title="class _NamespaceDependentDefaultDict(defaultdict)"></a>class <code>_NamespaceDependentDefaultDict(defaultdict)</code></h2><p>We use “namespaces” in the :class:<code>Vocabulary</code> object to <strong>keep track of several different mappings from strings to integers</strong>, so that we have a consistent API for mapping words, tags, labels, characters, or whatever else you want, into integers.  The issue is that some of those namespaces (words and characters) should have integers reserved for padding and out-of-vocabulary tokens, while others (labels and tags) shouldn’t.  This class <strong>allows you to specify filters on the namespace</strong> (the key used in the <code>defaultdict</code>), and use different default values depending on whether the namespace passes the filter.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _non_padded_namespaces: Set[str]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _padded_function: Callable[[], Any]</span><br></pre></td></tr></table></figure>
+<p>A zero-argument function to call to initialize a value for a namespace that <strong>should</strong> be padded. e.g.:</p>
+<p> <code>lambda: {padding_token: 0, oov_token: 1}</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _non_padded_function : Callable[[], Any]</span><br></pre></td></tr></table></figure>
+<p>A zero-argument function to call to initialize a value for a namespace that should <strong>not</strong> be padded. e.g.:</p>
+<p> <code>lambda: {}</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+ __init__(self,</span><br><span class="line">           non_padded_namespaces: Iterable[str],</span><br><span class="line">           padded_function: Callable[[], Any],</span><br><span class="line">           non_padded_function: Callable[[], Any])</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ add_non_padded_namespaces(self, non_padded_namespaces: Set[str])</span><br></pre></td></tr></table></figure>
+<h2 id="class-TokenToIndexDefaultDict-NamespaceDependentDefaultDict"><a href="#class-TokenToIndexDefaultDict-NamespaceDependentDefaultDict" class="headerlink" title="class _TokenToIndexDefaultDict(_NamespaceDependentDefaultDict)"></a>class <code>_TokenToIndexDefaultDict(_NamespaceDependentDefaultDict)</code></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ __init__(self, non_padded_namespaces: Set[str], padding_token: str, oov_token: str) -&gt; None</span><br></pre></td></tr></table></figure>
+<h2 id="class-IndexToTokenDefaultDict-NamespaceDependentDefaultDict"><a href="#class-IndexToTokenDefaultDict-NamespaceDependentDefaultDict" class="headerlink" title="class _IndexToTokenDefaultDict(_NamespaceDependentDefaultDict)"></a>class <code>_IndexToTokenDefaultDict(_NamespaceDependentDefaultDict)</code></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ __init__(self, non_padded_namespaces: Set[str], padding_token: str, oov_token: str) -&gt; None</span><br></pre></td></tr></table></figure>
+<h2 id="read-pretrained-tokens-embeddings-file-uri-str-gt-List-str"><a href="#read-pretrained-tokens-embeddings-file-uri-str-gt-List-str" class="headerlink" title="_read_pretrained_tokens(embeddings_file_uri: str) -&gt; List[str]"></a>_read_pretrained_tokens(embeddings_file_uri: str) -&gt; List[str]</h2><h2 id="pop-max-vocab-size-params-Params-gt-Union-int-Dict-str-int"><a href="#pop-max-vocab-size-params-Params-gt-Union-int-Dict-str-int" class="headerlink" title="pop_max_vocab_size(params: Params) -&gt; Union[int, Dict[str, int]]"></a>pop_max_vocab_size(params: Params) -&gt; Union[int, Dict[str, int]]</h2><p>max_vocab_size is allowed to be either an int or a Dict[str, int] (or nothing). But it could also be a string representing an int (in the case of environment variable substitution). So we need some complex logic to handle it.</p>
+<p><br></p>
+<h1 id="instance"><a href="#instance" class="headerlink" title="instance"></a>instance</h1><div align="center"><img src="/img/allennlp-data/allennlp-data-f3.png" ,="" height="200"></div>
+
+<h2 id="class-Instance-Mapping-str-Field"><a href="#class-Instance-Mapping-str-Field" class="headerlink" title="class Instance(Mapping[str, Field])"></a>class <code>Instance(Mapping[str, Field])</code></h2><p>An <code>Instance</code> is a collection of:class:<code>~allennlp.data.fields.field.Field</code> objects, specifying the inputs and outputs to some model.  We don’t make a distinction between inputs and outputs here, though - all operations are done on all fields, and when we return arrays, we return them as dictionaries keyed by field name.  A model can then decide which fields it wants to use as inputs as which as outputs. The <code>Fields</code> in an <code>Instance</code> can start out either indexed or un-indexed.  During the data processing pipeline, all fields will be indexed, after which multiple instances can be combined into a <code>Batch</code> and then converted into padded arrays.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- fields: MutableMapping[str, Field]</span><br></pre></td></tr></table></figure>
+<p><code>str</code> 为Field名。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- indexed： bool = False</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ add_field(self, field_name: str, field: Field, vocab: Vocabulary = None) -&gt; None</span><br></pre></td></tr></table></figure>
+<p> Add the field to the existing fields mapping. If we have already indexed the Instance, then we also index <code>field</code>, so it is necessary to supply the vocab.</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ count_vocab_items(self, counter: Dict[str, Dict[str, int]])</span><br></pre></td></tr></table></figure>
+<p> Increments counts in the given <code>counter</code> for all of the vocabulary items in all of the <code>Fields</code> in this <code>Instance</code>.</p>
+<p> 从Instance构建Vocabulary时调用。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ index_fields(self, vocab: Vocabulary) -&gt; None</span><br></pre></td></tr></table></figure>
+<p> <strong>Indexes all fields in this <code>Instance</code> using the provided <code>Vocabulary</code></strong>. This <code>mutates</code> the current object, it does not return a new <code>Instance</code>. A <code>DataIterator</code> will call this on each pass through a dataset; we use the <code>indexed</code> flag to make sure that indexing only happens once.</p>
+<p>This means that if for some reason you modify your vocabulary after you’ve indexed your instances, you might get unexpected behavior.</p>
+<p>内部实现调用 <code>Field.index</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ get_padding_lengths(self) -&gt; Dict[str, Dict[str, int]]</span><br></pre></td></tr></table></figure>
+<p>Returns a dictionary of padding lengths, <strong>keyed by field name</strong>.  <strong>Each <code>Field</code> returns a mapping from padding keys to actual lengths</strong>, and we just key that dictionary by field name.</p>
+<p>内部实现调用 <code>Field.get_padding_lengths</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">+ as_tensor_dict(self,</span><br><span class="line">                 padding_lengths: Dict[str, Dict[str, int]] = None) -&gt; Dict[str, DataArray]:</span><br></pre></td></tr></table></figure>
+<p>Pads each <code>Field</code> in this instance to the lengths given in <code>padding_lengths</code> (which is keyed by field name, then by padding key, the same as the return value in:func:<code>get_padding_lengths</code>), <strong>returning a list of torch tensors for each field</strong>.</p>
+<p>If <code>padding_lengths</code> is omitted, we will call <code>self.get_padding_lengths()</code> to get the sizes of the tensors to create.</p>
+<p>内部实现调用 <code>Field.as_tensor</code>。</p>
+<p><br></p>
+<h1 id="dataset"><a href="#dataset" class="headerlink" title="dataset"></a>dataset</h1><div align="center"><img src="/img/allennlp-data/allennlp-data-f4.png" ,="" height="200"></div>
+
+<h2 id="class-Batch-Iterable"><a href="#class-Batch-Iterable" class="headerlink" title="class Batch(Iterable)"></a>class <code>Batch(Iterable)</code></h2><p>A batch of Instances. In addition to containing the instances themselves, it contains helper functions for converting the data into tensors.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- instances: List[Instance]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ _check_types(self) -&gt; None</span><br></pre></td></tr></table></figure>
+<p>Check that all the instances have the same types.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ get_padding_lengths(self) -&gt; Dict[str, Dict[str, int]]</span><br></pre></td></tr></table></figure>
+<p>Gets the maximum padding lengths from all <code>Instances</code> in this batch.  Each <code>Instance</code> has multiple <code>Fields</code>, and each <code>Field</code> could have multiple things that need padding. We look at all fields in all instances, and <strong>find the max values for each (field_name, padding_key) pair</strong>, returning them in a dictionary.</p>
+<p>This can then be used to convert this batch into arrays of consistent length, or to set model parameters, etc.</p>
+<p>对batch进行padding时调用的函数。内部实现调用 <code>Instance.get_padding_lengths</code> 获取每个Instance的padding length。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ as_tensor_dict(self,</span><br><span class="line">                 padding_lengths: Dict[str, Dict[str, int]] = None,</span><br><span class="line">                 verbose: bool = False) -&gt; Dict[str, Union[torch.Tensor, Dict[str, torch.Tensor]]]</span><br></pre></td></tr></table></figure>
+<p>This method <strong>converts this <code>Batch</code> into a set of pytorch Tensors</strong> that can be passed through a model.  In order for the tensors to be valid tensors, <strong>all <code>Instances</code> in this batch need to be padded to the same lengths</strong> wherever padding is necessary, so we do that first, then we <strong>combine all of the tensors for each field in each instance into a set of batched tensors for each field</strong>.</p>
+<p>Return value is a dictionary of tensors, keyed by field name, suitable for passing as input to a model. This is a <code>batch</code> of instances, so, e.g., if the instances have a “question” field and an “answer” field, the “question” fields for all of the instances will be grouped together into a single tensor, and the “answer” fields for all instances will be similarly grouped in a parallel set of tensors, for batched computation. Additionally, for complex <code>Fields</code>, the value of the dictionary key is not necessarily a single tensor.  For example, with the <code>TextField</code>, the output is a dictionary mapping <code>TokenIndexer</code> keys to tensors. <strong>The number of elements in this sub-dictionary therefore corresponds to the number of <code>TokenIndexers</code> used to index the <code>TextField</code></strong>.  Each <code>Field</code> class is responsible for batching its own output.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ index_instances(self, vocab: Vocabulary) -&gt; None</span><br></pre></td></tr></table></figure>
+<p>将instances内的tokens转换为long；内部实现调用 <code>Instance.index_fields</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ print_statistics(self) -&gt; None</span><br></pre></td></tr></table></figure>
+<p><strong>Make sure if has been indexed first!</strong></p>
+<p>Show mean|standard dev of lengths, max|min lengths; also show 10 random instances.</p>
+<h1 id="fields"><a href="#fields" class="headerlink" title="fields"></a>fields</h1><p><code>DataArray = TypeVar(&quot;DataArray&quot;, torch.Tensor, Dict[str, torch.Tensor])</code></p>
+<h2 id="class-Field-Generic-DataArray"><a href="#class-Field-Generic-DataArray" class="headerlink" title="class Field(Generic[DataArray])"></a>class <code>Field(Generic[DataArray])</code></h2><p>A <code>Field</code> is <strong>some piece of a data instance</strong> that ends up as an tensor in a model (either as an input or an output).  Data instances are just collections of fields.</p>
+<p>Fields go through up to two steps of processing: (1) <strong>tokenized</strong> fields are converted into <strong>token ids</strong>, (2) fields <strong>containing token ids</strong> (or <strong>any other numeric data</strong>) are <strong>padded</strong> (if necessary) and <strong>converted into tensors</strong>.  The <code>Field</code> API has methods around both of these steps, though they may not be needed for some concrete <code>Field</code> classes - if your field doesn’t have any strings that need indexing, you don’t need to implement <code>count_vocab_items</code> or <code>index</code>.  These methods <code>pass</code> by default.</p>
+<p><strong>Once a vocabulary is computed and all fields are indexed, we will determine padding lengths, then intelligently batch together instances and pad them into actual tensors.</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ count_vocab_items(self, counter: Dict[str, Dict[str, int]]) &lt;interface, optional&gt;</span><br></pre></td></tr></table></figure>
+<p>If there are strings in this field that need to be converted into integers through a:class:<code>Vocabulary</code>, here is where we count them, to <strong>determine which tokens are in or out of the vocabulary</strong>.</p>
+<p>If your <code>Field</code> does not have any strings that need to be converted into indices, you do not need to implement this method.</p>
+<p>A note on this <code>counter</code>: because <code>Fields</code> can represent conceptually different things, we separate the vocabulary items by <code>namespaces</code>.  This way, we can use a single shared mechanism to handle all mappings from strings to integers in all fields, while keeping words in a <code>TextField</code> from sharing the same ids with labels in a <code>LabelField</code> (e.g., “entailment” or “contradiction” are labels in an entailment task)</p>
+<p>Additionally, a single <code>Field</code> might want to use multiple namespaces - <code>TextFields</code> can be represented as a combination of word ids and character ids, and <strong>you don’t want words and characters to share the same vocabulary</strong> - “a” as a word should get a different id from “a” as a character, and the vocabulary sizes of words and characters are very different.</p>
+<p>Because of this, the first key in the <code>counter</code> object is a <code>namespace</code>, like “tokens”, “token_characters”, “tags”, or “labels”, and the second key is the actual vocabulary item.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ index(self, vocab: Vocabulary) &lt;interface, optional&gt;</span><br></pre></td></tr></table></figure>
+<p>Given a :class:<code>Vocabulary</code>, converts all strings in this field into (typically) integers. This <code>modifies</code> the <code>Field</code> object, it does not return anything.</p>
+<p>If your <code>Field</code> does not have any strings that need to be converted into indices, you do not need to implement this method.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ get_padding_lengths(self) -&gt; Dict[str, int] &lt;interface&gt;</span><br></pre></td></tr></table></figure>
+<p>If there are things in this field that need padding, note them here.  In order to pad a batch of instance, we get all of the lengths from the batch, take the max, and pad everything to that length (or use a pre-specified maximum length).  The return value is a dictionary mapping keys to lengths, like {‘num_tokens’: 13}.</p>
+<p>This is always called after :func:<code>index</code>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ as_tensor(self, padding_lengths: Dict[str, int]) -&gt; DataArray &lt;interface&gt;</span><br></pre></td></tr></table></figure>
+<p>Given a set of specified padding lengths, actually pad the data in this field and return a torch Tensor (or a more complex data structure) of the correct shape.  We also take a couple of parameters that are important when constructing torch Tensors.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ empty_field(self) -&gt; &apos;Field&apos; &lt;interface&gt;</span><br></pre></td></tr></table></figure>
+<p>We need a representation of an empty field of each type.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ batch_tensors(self, tensor_list: List[DataArray]) -&gt; DataArray &lt;interface, optional&gt;</span><br></pre></td></tr></table></figure>
+<p>Takes the output of <code>Field.as_tensor()</code> from a list of <code>Instances</code> and merges it into one batched tensor for this <code>Field</code>.  The default implementation here in the base class handles cases where <code>as_tensor</code> returns a single torch tensor per instance.  If your subclass returns something other than this, you need to override this method.</p>
+<p><br></p>
+<h1 id="tokenizers"><a href="#tokenizers" class="headerlink" title="tokenizers"></a>tokenizers</h1><p><br></p>
+<h1 id="token-indexers"><a href="#token-indexers" class="headerlink" title="token_indexers"></a>token_indexers</h1><p><br></p>
+<h1 id="iterators"><a href="#iterators" class="headerlink" title="iterators"></a>iterators</h1><p><br></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/NLP/" rel="tag"># NLP</a>
+          
+            <a href="/tags/AllenNLP/" rel="tag"># AllenNLP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/28/knowledge-based-text-generation/" rel="next" title="基于知识的对话系统">
+                <i class="fa fa-chevron-left"></i> 基于知识的对话系统
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">platoneko</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#dataset-reader"><span class="nav-number">1.</span> <span class="nav-text">dataset_reader</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-DatasetReader-Registrable"><span class="nav-number">1.1.</span> <span class="nav-text">class DatasetReader(Registrable)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-LazyInstances-Iterable"><span class="nav-number">1.2.</span> <span class="nav-text">class _LazyInstances(Iterable)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#vocabulary"><span class="nav-number">2.</span> <span class="nav-text">vocabulary</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-Vocabulary-Registrable"><span class="nav-number">2.1.</span> <span class="nav-text">class Vocabulary(Registrable)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-NamespaceDependentDefaultDict-defaultdict"><span class="nav-number">2.2.</span> <span class="nav-text">class _NamespaceDependentDefaultDict(defaultdict)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-TokenToIndexDefaultDict-NamespaceDependentDefaultDict"><span class="nav-number">2.3.</span> <span class="nav-text">class _TokenToIndexDefaultDict(_NamespaceDependentDefaultDict)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-IndexToTokenDefaultDict-NamespaceDependentDefaultDict"><span class="nav-number">2.4.</span> <span class="nav-text">class _IndexToTokenDefaultDict(_NamespaceDependentDefaultDict)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#read-pretrained-tokens-embeddings-file-uri-str-gt-List-str"><span class="nav-number">2.5.</span> <span class="nav-text">_read_pretrained_tokens(embeddings_file_uri: str) -&gt; List[str]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pop-max-vocab-size-params-Params-gt-Union-int-Dict-str-int"><span class="nav-number">2.6.</span> <span class="nav-text">pop_max_vocab_size(params: Params) -&gt; Union[int, Dict[str, int]]</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#instance"><span class="nav-number">3.</span> <span class="nav-text">instance</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-Instance-Mapping-str-Field"><span class="nav-number">3.1.</span> <span class="nav-text">class Instance(Mapping[str, Field])</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#dataset"><span class="nav-number">4.</span> <span class="nav-text">dataset</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-Batch-Iterable"><span class="nav-number">4.1.</span> <span class="nav-text">class Batch(Iterable)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#fields"><span class="nav-number">5.</span> <span class="nav-text">fields</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-Field-Generic-DataArray"><span class="nav-number">5.1.</span> <span class="nav-text">class Field(Generic[DataArray])</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tokenizers"><span class="nav-number">6.</span> <span class="nav-text">tokenizers</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#token-indexers"><span class="nav-number">7.</span> <span class="nav-text">token_indexers</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#iterators"><span class="nav-number">8.</span> <span class="nav-text">iterators</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">platoneko</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.min.js"></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.ui.min.js"></script>
+
+  
+  <script src="/lib/three/three.min.js"></script>
+
+  
+  <script src="/lib/three/three-waves.min.js"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

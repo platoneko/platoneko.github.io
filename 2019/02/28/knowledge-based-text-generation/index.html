@@ -43,6 +43,32 @@
 
 
 
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext">
+  
+
+
+
 
 
 
@@ -134,7 +160,7 @@
 <meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f28.png">
 <meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f29.png">
 <meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f30.png">
-<meta property="og:updated_time" content="2019-03-02T17:12:07.696Z">
+<meta property="og:updated_time" content="2019-03-05T11:21:39.310Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于知识的对话系统">
 <meta name="twitter:description" content="开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新- Introduction早期的基于神经网络的文本生">
@@ -218,6 +244,10 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+    
+      
+        <p class="site-subtitle">A platonic fantast learning AI</p>
+      
     
     
   </div>
@@ -414,7 +444,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-03 01:12:07" itemprop="dateModified" datetime="2019-03-03T01:12:07+08:00">2019-03-03</time>
+                <time title="Modified: 2019-03-05 19:21:39" itemprop="dateModified" datetime="2019-03-05T19:21:39+08:00">2019-03-05</time>
               
             
           </span>
@@ -448,6 +478,13 @@
           
 
           
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
 
           
 
@@ -468,6 +505,7 @@
       
         <p>开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新-</p>
 <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a><strong>Introduction</strong></h1><p>早期的基于神经网络的文本生成任务大多是纯数据驱动的基于Seq2Seq框架的（暴力）模型，甚至是直接将NMT任务的Encoder-Decoder框架搬过来，仅仅是换了个数据集进行调参（如今这种灌水肯定是不行了）。这样直接生搬硬套的模型虽然确实产生了一些有意思的结果，生成的文本看上去很接近自然语言，但是过于ambiguous往往缺乏有实质信息(informative)的内容。我们就从直觉出发，显然一个正常人在对话和写作过程会加入个人的经验、常识等超出上下文内容的信息，因此将外界知识引入是必不可少的。无论是对自然语言的理解（NLU）还是生成自然语言（NLG），知识的引入都肯定会使系统效果有显著提升。从训练数据上来看，我们要完成从对上下文的理解、推理最后到文本的生成，上下文中出现的一些实体（entity）隐含的关系、性质等信息往往要借助外界知识才能完善，这些关系性质仅仅从训练数据集中是无法获取和推理的，直接去拟合上下文的匹配其结果往往只能使系统学习到语法结构和一些最简单最基本的标准 response。</p>
+<a id="more"></a>
 <p><br></p>
 <h1 id="Augmenting-End-to-End-Dialogue-System-with-Commonsense-Knowledge"><a href="#Augmenting-End-to-End-Dialogue-System-with-Commonsense-Knowledge" class="headerlink" title="Augmenting End-to-End Dialogue System with Commonsense Knowledge"></a><strong>Augmenting End-to-End Dialogue System with Commonsense Knowledge</strong></h1><p><a href="https://arxiv.org/pdf/1709.05453.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1709.05453.pdf</a></p>
 <blockquote>
@@ -754,6 +792,10 @@ n+l+1 \,\,\,\, otherwise
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2019/03/03/allennlp-data/" rel="prev" title="AllenNLP源码解读之data">
+                AllenNLP源码解读之data <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -822,7 +864,7 @@ n+l+1 \,\,\,\, otherwise
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -839,7 +881,9 @@ n+l+1 \,\,\,\, otherwise
                     
                       
                     
-                    <span class="site-state-item-count">2</span>
+                      
+                    
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -866,7 +910,9 @@ n+l+1 \,\,\,\, otherwise
                     
                       
                     
-                    <span class="site-state-item-count">7</span>
+                      
+                    
+                    <span class="site-state-item-count">8</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -941,7 +987,36 @@ n+l+1 \,\,\,\, otherwise
 
 
 
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
 
 
 
@@ -989,13 +1064,10 @@ n+l+1 \,\,\,\, otherwise
 
 
 
-  
-    
-    
-  
-  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
 
 
+  
+  
 
 
 
@@ -1008,13 +1080,19 @@ n+l+1 \,\,\,\, otherwise
 
 
   
-  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
 
   
-  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.min.js"></script>
 
   
-  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.ui.min.js"></script>
+
+  
+  <script src="/lib/three/three.min.js"></script>
+
+  
+  <script src="/lib/three/three-waves.min.js"></script>
 
 
   

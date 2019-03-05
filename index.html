@@ -43,6 +43,32 @@
 
 
 
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext">
+  
+
+
+
 
 
 
@@ -184,6 +210,10 @@
       </a>
     </div>
     
+      
+        <p class="site-subtitle">A platonic fantast learning AI</p>
+      
+    
     
   </div>
 
@@ -319,6 +349,198 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/03/allennlp-data/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="platoneko">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Platoneko's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/03/allennlp-data/" class="post-title-link" itemprop="url">AllenNLP源码解读之data</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-03 18:43:32" itemprop="dateCreated datePublished" datetime="2019-03-03T18:43:32+08:00">2019-03-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-05 19:19:45" itemprop="dateModified" datetime="2019-03-05T19:19:45+08:00">2019-03-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/AllenNLP/" itemprop="url" rel="index"><span itemprop="name">AllenNLP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="dataset-reader"><a href="#dataset-reader" class="headerlink" title="dataset_reader"></a><strong>dataset_reader</strong></h1><div align="center"><img src="/img/allennlp-data/allennlp-data-f1.png" ,="" height="200"></div>
+
+<h2 id="class-DatasetReader-Registrable"><a href="#class-DatasetReader-Registrable" class="headerlink" title="class DatasetReader(Registrable)"></a>class <code>DatasetReader(Registrable)</code></h2><p>Returns an <code>Iterable</code> containing all the instances in the specified dataset.</p>
+<p>If <code>self.lazy</code> is False, this calls <code>self._read()</code>, ensures that the result is a list, then returns the resulting list.</p>
+<p>If <code>self.lazy</code> is True, this returns an object whose <code>__iter__</code> method calls <code>self._read()</code> each iteration. In this case your implementation of <code>_read()</code> must also be lazy (that is, not load all instances into memory at once), otherwise you will get a <code>ConfigurationError</code>.</p>
+<p><strong>In either case, the returned <code>Iterable</code> can be iterated over multiple times.</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- lazy: bool</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/03/03/allennlp-data/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/28/knowledge-based-text-generation/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -381,7 +603,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-03 01:12:07" itemprop="dateModified" datetime="2019-03-03T01:12:07+08:00">2019-03-03</time>
+                <time title="Modified: 2019-03-05 19:21:39" itemprop="dateModified" datetime="2019-03-05T19:21:39+08:00">2019-03-05</time>
               
             
           </span>
@@ -434,11 +656,8 @@
 
       
         
-          
-            <p>
-              开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答
-              ...
-            </p>
+          <p>开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新-</p>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a><strong>Introduction</strong></h1><p>早期的基于神经网络的文本生成任务大多是纯数据驱动的基于Seq2Seq框架的（暴力）模型，甚至是直接将NMT任务的Encoder-Decoder框架搬过来，仅仅是换了个数据集进行调参（如今这种灌水肯定是不行了）。这样直接生搬硬套的模型虽然确实产生了一些有意思的结果，生成的文本看上去很接近自然语言，但是过于ambiguous往往缺乏有实质信息(informative)的内容。我们就从直觉出发，显然一个正常人在对话和写作过程会加入个人的经验、常识等超出上下文内容的信息，因此将外界知识引入是必不可少的。无论是对自然语言的理解（NLU）还是生成自然语言（NLG），知识的引入都肯定会使系统效果有显著提升。从训练数据上来看，我们要完成从对上下文的理解、推理最后到文本的生成，上下文中出现的一些实体（entity）隐含的关系、性质等信息往往要借助外界知识才能完善，这些关系性质仅仅从训练数据集中是无法获取和推理的，直接去拟合上下文的匹配其结果往往只能使系统学习到语法结构和一些最简单最基本的标准 response。</p>
           <!--noindex-->
           
             <div class="post-button text-center">
@@ -711,7 +930,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -728,7 +947,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">2</span>
+                      
+                    
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -755,7 +976,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">7</span>
+                      
+                    
+                    <span class="site-state-item-count">8</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -813,7 +1036,36 @@
 
 
 
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
 
 
 
@@ -861,13 +1113,10 @@
 
 
 
-  
-    
-    
-  
-  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
 
 
+  
+  
 
 
 
@@ -880,13 +1129,19 @@
 
 
   
-  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
 
   
-  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.min.js"></script>
 
   
-  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.ui.min.js"></script>
+
+  
+  <script src="/lib/three/three.min.js"></script>
+
+  
+  <script src="/lib/three/three-waves.min.js"></script>
 
 
   
@@ -939,6 +1194,8 @@
 
   
   
+    
+      
     
       
         
