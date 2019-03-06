@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext">
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="data_iterator  TensorDict = Dict[str, Union[torch.Tensor, Dict[str, torch.Tensor]]] class DataIterator(Registrable)An abstract DataIterator class. DataIterators must override _create_batches(). 简单来看，D">
+<meta name="keywords" content="NLP,AllenNLP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AllenNLP源码解读 data.iterators">
+<meta property="og:url" content="http://yoursite.com/2019/03/05/allennlp-iterators/index.html">
+<meta property="og:site_name" content="Platoneko&#39;s Notes">
+<meta property="og:description" content="data_iterator  TensorDict = Dict[str, Union[torch.Tensor, Dict[str, torch.Tensor]]] class DataIterator(Registrable)An abstract DataIterator class. DataIterators must override _create_batches(). 简单来看，D">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/img/allennlp-iterators/allennlp-iterators-f1.png">
+<meta property="og:image" content="http://yoursite.com/img/allennlp-iterators/allennlp-iterators-f2.png">
+<meta property="og:updated_time" content="2019-03-06T05:08:06.470Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AllenNLP源码解读 data.iterators">
+<meta name="twitter:description" content="data_iterator  TensorDict = Dict[str, Union[torch.Tensor, Dict[str, torch.Tensor]]] class DataIterator(Registrable)An abstract DataIterator class. DataIterators must override _create_batches(). 简单来看，D">
+<meta name="twitter:image" content="http://yoursite.com/img/allennlp-iterators/allennlp-iterators-f1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/03/05/allennlp-iterators/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>AllenNLP源码解读 data.iterators | Platoneko's Notes</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Platoneko's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">A platonic fantast learning AI</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/05/allennlp-iterators/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="platoneko">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Platoneko's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AllenNLP源码解读 data.iterators
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-05 19:28:32" itemprop="dateCreated datePublished" datetime="2019-03-05T19:28:32+08:00">2019-03-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-06 13:08:06" itemprop="dateModified" datetime="2019-03-06T13:08:06+08:00">2019-03-06</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/AllenNLP/" itemprop="url" rel="index"><span itemprop="name">AllenNLP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="data-iterator"><a href="#data-iterator" class="headerlink" title="data_iterator"></a>data_iterator</h1><div align="center"><img src="/img/allennlp-iterators/allennlp-iterators-f1.png" ,="" height="300"></div>
+
+<p>TensorDict = Dict[str, Union[torch.Tensor, Dict[str, torch.Tensor]]]</p>
+<h2 id="class-DataIterator-Registrable"><a href="#class-DataIterator-Registrable" class="headerlink" title="class DataIterator(Registrable)"></a>class <code>DataIterator(Registrable)</code></h2><p>An abstract <code>DataIterator</code> class. <code>DataIterators</code> must override <code>_create_batches()</code>.</p>
+<p>简单来看，<code>DataIterator</code> 的作用，就是将 <code>DatasetReader</code> 生成的instances构建成 <code>Batch</code> 的迭代器，每次迭代产生一个 <code>Batch</code>。</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- default_implementation = &apos;bucket&apos;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- vocab: Vocabulary = None</span><br></pre></td></tr></table></figure>
+<p>用来将Instance中的token转换为integer。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _batch_size: int = 32</span><br></pre></td></tr></table></figure>
+<p>The size of each batch of instances yielded when calling the iterator.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _max_instances_in_memory: int = None</span><br></pre></td></tr></table></figure>
+<p>iterator每次载入到内存的Instance数目。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _instances_per_epoch: int = None</span><br></pre></td></tr></table></figure>
+<p>每个epoch使用的Instance数量；默认遍历整个dataset。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _maximum_samples_per_batch: Tuple[str, int] = None</span><br></pre></td></tr></table></figure>
+<p>If specified, then is a tuple (padding_key, limit) and we will <strong>ensure that every batch is such that batch_size * sequence_length &lt;= limit</strong> where sequence_length is given by the padding_key. This is done by <strong>moving excess instances to the next batch</strong> (as opposed to dividing a large batch evenly) and should result in a fairly tight packing.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _cache_instances: bool = False</span><br></pre></td></tr></table></figure>
+<p>If true, the iterator will cache the tensorized instances in memory.<br>If false, it will do the tensorization anew each iteration.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _cache: Dict[int, List[TensorDict]] = defaultdict(list)</span><br></pre></td></tr></table></figure>
+<p>Dict的key为id(instances)，value为 <code>Batch</code> 的list。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _track_epoch: bool = False</span><br></pre></td></tr></table></figure>
+<p>If true, each instance will get a <code>MetadataField</code> containing the epoch number.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _epochs: Dict[int, int] = defaultdict(int)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _cursors: Dict[int, Iterator[Instance]] = dict()</span><br></pre></td></tr></table></figure>
+<p>if each epoch represents <strong>less than</strong> one pass through the dataset, we want to <strong>remember where we left off</strong>. As <code>Iterator</code>s are not necessarily hashable, we use their id() as the key.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+ __init__(self,</span><br><span class="line">           batch_size: int = 32,</span><br><span class="line">           instances_per_epoch: int = None,</span><br><span class="line">           max_instances_in_memory: int = None,</span><br><span class="line">           cache_instances: bool = False,</span><br><span class="line">           track_epoch: bool = False,</span><br><span class="line">           maximum_samples_per_batch: Tuple[str, int] = None)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+ __call__(self,</span><br><span class="line">           instances: Iterable[Instance],</span><br><span class="line">           num_epochs: int = None,</span><br><span class="line">           shuffle: bool = True) -&gt; Iterator[TensorDict]</span><br></pre></td></tr></table></figure>
+<p>Returns a generator that yields batches over the given dataset for the given number of epochs. If <code>num_epochs</code> is not specified, it will yield batches forever.</p>
+<p>生成器函数。对返回的生成器进行迭代时，每次迭代会得到一个 <code>Batch</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ _take_instances(self,</span><br><span class="line">                  instances: Iterable[Instance],</span><br><span class="line">                  max_instances: Optional[int] = None) -&gt; Iterator[Instance]</span><br></pre></td></tr></table></figure>
+<p>Take the next <code>max_instances</code> instances from the given dataset.</p>
+<p>If <code>max_instances</code> is <code>None</code>, then just take all instances from the dataset.</p>
+<p>If <code>max_instances</code> is not <code>None</code>, each call resumes where the previous one left off, and when you get to the end of the dataset you start again from the beginning.</p>
+<p>用来支持每个epoch只使用一部分dataset的情况。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">+ _memory_sized_lists(self,</span><br><span class="line">                      instances: Iterable[Instance]) -&gt; Iterable[List[Instance]]</span><br></pre></td></tr></table></figure>
+<p>Breaks the dataset into “memory-sized” lists of instances, which it <strong>yields up</strong> one at a time until it gets through a full epoch.</p>
+<p>For example, if the dataset is already an in-memory list, and each epoch represents one pass through the dataset, it just yields back the dataset. Whereas if the dataset is lazily read from disk and we’ve specified to load 1000 instances at a time, then it yields lists of 1000 instances each.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ _ensure_batch_is_sufficiently_small(self,</span><br><span class="line">                                      batch_instances: Iterable[Instance],</span><br><span class="line">                                      excess: Deque[Instance]) -&gt; List[List[Instance]]</span><br></pre></td></tr></table></figure>
+<p>If self._maximum_samples_per_batch is specified, then split the batch into smaller sub-batches if it exceeds the maximum size.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ get_num_batches(self, instances: Iterable[Instance]) -&gt; int</span><br></pre></td></tr></table></figure>
+<p>Returns the number of batches that <code>dataset</code> will be split into; if you want to track progress through the batch with the generator produced by <code>__call__</code>, this could be useful.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ _create_batches(self, instances: Iterable[Instance], shuffle: bool) -&gt; Iterable[Batch] &lt;interface&gt;</span><br></pre></td></tr></table></figure>
+<p>This method should return one epoch worth of batches.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ index_with(self, vocab: Vocabulary)</span><br></pre></td></tr></table></figure>
+<p>Set <code>self.vocab</code>.</p>
+<h1 id="bucket-iterator"><a href="#bucket-iterator" class="headerlink" title="bucket_iterator"></a>bucket_iterator</h1><h2 id="class-BucketIterator-DataIterator"><a href="#class-BucketIterator-DataIterator" class="headerlink" title="class BucketIterator(DataIterator)"></a>class BucketIterator(DataIterator)</h2><p>An iterator which by default, <strong>pads batches with respect to the maximum input lengths per batch</strong>. Additionally, you can <strong>provide a list of field names and padding keys which the dataset will be sorted by</strong> before doing this batching, causing inputs with similar length to be batched together, making computation more efficient (as less time is wasted on padded elements of the batch).</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _sorting_keys: List[Tuple[str, str]]</span><br></pre></td></tr></table></figure>
+<p>To bucket inputs into batches, we want to <strong>group the instances by padding length</strong>, so that we minimize the amount of padding necessary per batch. In order to do this, we need to know <strong>which fields need what type of padding, and in what order</strong>.</p>
+<p>For example, <code>[(&quot;sentence1&quot;, &quot;num_tokens&quot;), (&quot;sentence2&quot;, &quot;num_tokens&quot;), (&quot;sentence1&quot;, &quot;num_token_characters&quot;)]</code> would sort a dataset first by the “num_tokens” of the “sentence1” field, then by the “num_tokens” of the “sentence2” field, and finally by the “num_token_characters” of the “sentence1” field.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _padding_noise: float = 0.1</span><br></pre></td></tr></table></figure>
+<p>When sorting by padding length, we add a bit of noise to the lengths, so that the sorting isn’t deterministic.  This parameter determines how much noise we add, as a percentage of the actual padding value for each instance.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _biggest_batch_first: bool = False</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">+ __init__(self,</span><br><span class="line">           sorting_keys: List[Tuple[str, str]],</span><br><span class="line">           padding_noise: float = 0.1,</span><br><span class="line">           biggest_batch_first: bool = False,</span><br><span class="line">           batch_size: int = 32,</span><br><span class="line">           instances_per_epoch: int = None,</span><br><span class="line">           max_instances_in_memory: int = None,</span><br><span class="line">           cache_instances: bool = False,</span><br><span class="line">           track_epoch: bool = False,</span><br><span class="line">           maximum_samples_per_batch: Tuple[str, int] = None)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ @overrides _create_batches(self, instances: Iterable[Instance], shuffle: bool) -&gt; Iterable[Batch]</span><br></pre></td></tr></table></figure>
+<p>生成器函数。每次迭代 <code>self._memory_sized_list(instances)</code> 得到适合内存空间大小的 <code>instance_list</code>， 调用 <code>sort_by_padding</code> 对 <code>instance_list</code> 中的Instance进行index化和排序，从 <code>instance_list</code> 中生成 <code>batches</code>， 从 <code>batches</code> 中生成 <code>Batch</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+ @staticmethod sort_by_padding(instances: List[Instance],</span><br><span class="line">                                sorting_keys: List[Tuple[str, str]],</span><br><span class="line">                                vocab: Vocabulary,</span><br><span class="line">                                padding_noise: float = 0.0) -&gt; List[Instance]</span><br></pre></td></tr></table></figure>
+<p>Sorts the instances by their padding lengths, using the keys in <code>sorting_keys</code> (in the order in which they are provided).  <code>sorting_keys</code> is a list of <code>(field_name, padding_key)</code> tuples.</p>
+<h1 id="basic-iterator"><a href="#basic-iterator" class="headerlink" title="basic_iterator"></a>basic_iterator</h1><h2 id="class-BasicIterator-DataIterator"><a href="#class-BasicIterator-DataIterator" class="headerlink" title="class BasicIterator(DataIterator)"></a>class <code>BasicIterator(DataIterator)</code></h2><p>A very basic iterator that takes a dataset, possibly shuffles it, and creates fixed sized batches.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ @overrides _create_batches(self, instances: Iterable[Instance], shuffle: bool) -&gt; Iterable[Batch]</span><br></pre></td></tr></table></figure>
+<p>First break the dataset into memory-sized lists. Then break each memory-sized list into batches.</p>
+<h1 id="multiprocess-iterator"><a href="#multiprocess-iterator" class="headerlink" title="multiprocess_iterator"></a>multiprocess_iterator</h1><div align="center"><img src="/img/allennlp-iterators/allennlp-iterators-f2.png" ,="" height="300"></div>
+
+<h2 id="class-MultiprocessIterator-DataIterator"><a href="#class-MultiprocessIterator-DataIterator" class="headerlink" title="class MultiprocessIterator(DataIterator)"></a>class <code>MultiprocessIterator(DataIterator)</code></h2><p>Wraps another <code>DataIterator</code> and uses it to generate tensor dicts using multiple processes.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- iterator: DataIterator</span><br></pre></td></tr></table></figure>
+<p>The <code>DataIterator</code> for generating tensor dicts. It will be shared among processes, so it should not be stateful in any way.</p>
+<p><code>self.iterator</code> <strong>cannot</strong> use <code>cache_instances</code> or <code>instances_per_epoch</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- num_workers: int = 1</span><br></pre></td></tr></table></figure>
+<p>The number of processes used for generating tensor dicts.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- output_queue_size: int = 1000</span><br></pre></td></tr></table></figure>
+<p>The size of the output queue on which tensor dicts are <strong>placed to be consumed</strong>.</p>
+<p>You might need to increase this if you’re generating tensor dicts too quickly.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- batch_size: int = self.iterator._batch_size</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ @overrides _create_batches(self, instances: Iterable[Instance], shuffle: bool) -&gt; Iterable[Batch]</span><br></pre></td></tr></table></figure>
+<p>MultiprocessIterator <strong>doesn’t</strong> use create_batches. <strong>Raise <code>RuntimeError</code></strong>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ @overrides index_with(self, vocab: Vocabulary)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+ @overrides __call__(self,</span><br><span class="line">                      instances: Iterable[Instance],</span><br><span class="line">                      num_epochs: int = None,</span><br><span class="line">                      shuffle: bool = True) -&gt; Iterator[TensorDict]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+ @staticmethod _create_tensor_dicts(input_queue: Queue,</span><br><span class="line">                                     output_queue: Queue,</span><br><span class="line">                                     iterator: DataIterator,</span><br><span class="line">                                     shuffle: bool,</span><br><span class="line">                                     index: int) -&gt; None</span><br></pre></td></tr></table></figure>
+<p>Pulls at most <code>max_instances_in_memory</code> from the input_queue, groups them into batches of size <code>batch_size</code>, converts them to <code>TensorDict</code> s, and puts them on the <code>output_queue</code>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+ @staticmethod _queuer(instances: Iterable[Instance],</span><br><span class="line">                        input_queue: Queue,</span><br><span class="line">                        num_workers: int,</span><br><span class="line">                        num_epochs: Optional[int]) -&gt; None</span><br></pre></td></tr></table></figure>
+<p>Reads Instances from the iterable and puts them in the input_queue.</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/NLP/" rel="tag"># NLP</a>
+          
+            <a href="/tags/AllenNLP/" rel="tag"># AllenNLP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/03/allennlp-data/" rel="next" title="AllenNLP源码解读 data">
+                <i class="fa fa-chevron-left"></i> AllenNLP源码解读 data
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">platoneko</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#data-iterator"><span class="nav-number">1.</span> <span class="nav-text">data_iterator</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-DataIterator-Registrable"><span class="nav-number">1.1.</span> <span class="nav-text">class DataIterator(Registrable)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#bucket-iterator"><span class="nav-number">2.</span> <span class="nav-text">bucket_iterator</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-BucketIterator-DataIterator"><span class="nav-number">2.1.</span> <span class="nav-text">class BucketIterator(DataIterator)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#basic-iterator"><span class="nav-number">3.</span> <span class="nav-text">basic_iterator</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-BasicIterator-DataIterator"><span class="nav-number">3.1.</span> <span class="nav-text">class BasicIterator(DataIterator)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#multiprocess-iterator"><span class="nav-number">4.</span> <span class="nav-text">multiprocess_iterator</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-MultiprocessIterator-DataIterator"><span class="nav-number">4.1.</span> <span class="nav-text">class MultiprocessIterator(DataIterator)</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">platoneko</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.min.js"></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.ui.min.js"></script>
+
+  
+  <script src="/lib/three/three.min.js"></script>
+
+  
+  <script src="/lib/three/three-waves.min.js"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
