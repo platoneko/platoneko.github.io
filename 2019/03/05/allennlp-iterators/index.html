@@ -132,7 +132,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/img/allennlp-iterators/allennlp-iterators-f1.png">
 <meta property="og:image" content="http://yoursite.com/img/allennlp-iterators/allennlp-iterators-f2.png">
-<meta property="og:updated_time" content="2019-03-06T05:08:06.470Z">
+<meta property="og:updated_time" content="2019-03-06T07:08:25.570Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AllenNLP源码解读 data.iterators">
 <meta name="twitter:description" content="data_iterator  TensorDict = Dict[str, Union[torch.Tensor, Dict[str, torch.Tensor]]] class DataIterator(Registrable)An abstract DataIterator class. DataIterators must override _create_batches(). 简单来看，D">
@@ -416,7 +416,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-03-06 13:08:06" itemprop="dateModified" datetime="2019-03-06T13:08:06+08:00">2019-03-06</time>
+                <time title="Modified: 2019-03-06 15:08:25" itemprop="dateModified" datetime="2019-03-06T15:08:25+08:00">2019-03-06</time>
               
             
           </span>
@@ -528,7 +528,8 @@
 <p>This method should return one epoch worth of batches.</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ index_with(self, vocab: Vocabulary)</span><br></pre></td></tr></table></figure>
 <p>Set <code>self.vocab</code>.</p>
-<h1 id="bucket-iterator"><a href="#bucket-iterator" class="headerlink" title="bucket_iterator"></a>bucket_iterator</h1><h2 id="class-BucketIterator-DataIterator"><a href="#class-BucketIterator-DataIterator" class="headerlink" title="class BucketIterator(DataIterator)"></a>class BucketIterator(DataIterator)</h2><p>An iterator which by default, <strong>pads batches with respect to the maximum input lengths per batch</strong>. Additionally, you can <strong>provide a list of field names and padding keys which the dataset will be sorted by</strong> before doing this batching, causing inputs with similar length to be batched together, making computation more efficient (as less time is wasted on padded elements of the batch).</p>
+<h1 id="bucket-iterator"><a href="#bucket-iterator" class="headerlink" title="bucket_iterator"></a>bucket_iterator</h1><h2 id="class-BucketIterator-DataIterator"><a href="#class-BucketIterator-DataIterator" class="headerlink" title="class BucketIterator(DataIterator)"></a>class BucketIterator(DataIterator)</h2><p><code>@DataIterator.register(&quot;bucket&quot;)</code></p>
+<p>An iterator which by default, <strong>pads batches with respect to the maximum input lengths per batch</strong>. Additionally, you can <strong>provide a list of field names and padding keys which the dataset will be sorted by</strong> before doing this batching, causing inputs with similar length to be batched together, making computation more efficient (as less time is wasted on padded elements of the batch).</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _sorting_keys: List[Tuple[str, str]]</span><br></pre></td></tr></table></figure>
 <p>To bucket inputs into batches, we want to <strong>group the instances by padding length</strong>, so that we minimize the amount of padding necessary per batch. In order to do this, we need to know <strong>which fields need what type of padding, and in what order</strong>.</p>
 <p>For example, <code>[(&quot;sentence1&quot;, &quot;num_tokens&quot;), (&quot;sentence2&quot;, &quot;num_tokens&quot;), (&quot;sentence1&quot;, &quot;num_token_characters&quot;)]</code> would sort a dataset first by the “num_tokens” of the “sentence1” field, then by the “num_tokens” of the “sentence2” field, and finally by the “num_token_characters” of the “sentence1” field.</p>
@@ -540,12 +541,14 @@
 <p>生成器函数。每次迭代 <code>self._memory_sized_list(instances)</code> 得到适合内存空间大小的 <code>instance_list</code>， 调用 <code>sort_by_padding</code> 对 <code>instance_list</code> 中的Instance进行index化和排序，从 <code>instance_list</code> 中生成 <code>batches</code>， 从 <code>batches</code> 中生成 <code>Batch</code>。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+ @staticmethod sort_by_padding(instances: List[Instance],</span><br><span class="line">                                sorting_keys: List[Tuple[str, str]],</span><br><span class="line">                                vocab: Vocabulary,</span><br><span class="line">                                padding_noise: float = 0.0) -&gt; List[Instance]</span><br></pre></td></tr></table></figure>
 <p>Sorts the instances by their padding lengths, using the keys in <code>sorting_keys</code> (in the order in which they are provided).  <code>sorting_keys</code> is a list of <code>(field_name, padding_key)</code> tuples.</p>
-<h1 id="basic-iterator"><a href="#basic-iterator" class="headerlink" title="basic_iterator"></a>basic_iterator</h1><h2 id="class-BasicIterator-DataIterator"><a href="#class-BasicIterator-DataIterator" class="headerlink" title="class BasicIterator(DataIterator)"></a>class <code>BasicIterator(DataIterator)</code></h2><p>A very basic iterator that takes a dataset, possibly shuffles it, and creates fixed sized batches.</p>
+<h1 id="basic-iterator"><a href="#basic-iterator" class="headerlink" title="basic_iterator"></a>basic_iterator</h1><h2 id="class-BasicIterator-DataIterator"><a href="#class-BasicIterator-DataIterator" class="headerlink" title="class BasicIterator(DataIterator)"></a>class <code>BasicIterator(DataIterator)</code></h2><p><code>@DataIterator.register(&quot;basic&quot;)</code></p>
+<p>A very basic iterator that takes a dataset, possibly shuffles it, and creates fixed sized batches.</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ @overrides _create_batches(self, instances: Iterable[Instance], shuffle: bool) -&gt; Iterable[Batch]</span><br></pre></td></tr></table></figure>
 <p>First break the dataset into memory-sized lists. Then break each memory-sized list into batches.</p>
 <h1 id="multiprocess-iterator"><a href="#multiprocess-iterator" class="headerlink" title="multiprocess_iterator"></a>multiprocess_iterator</h1><div align="center"><img src="/img/allennlp-iterators/allennlp-iterators-f2.png" ,="" height="300"></div>
 
-<h2 id="class-MultiprocessIterator-DataIterator"><a href="#class-MultiprocessIterator-DataIterator" class="headerlink" title="class MultiprocessIterator(DataIterator)"></a>class <code>MultiprocessIterator(DataIterator)</code></h2><p>Wraps another <code>DataIterator</code> and uses it to generate tensor dicts using multiple processes.</p>
+<h2 id="class-MultiprocessIterator-DataIterator"><a href="#class-MultiprocessIterator-DataIterator" class="headerlink" title="class MultiprocessIterator(DataIterator)"></a>class <code>MultiprocessIterator(DataIterator)</code></h2><p><code>@DataIterator.register(&quot;multiprocess&quot;)</code></p>
+<p>Wraps another <code>DataIterator</code> and uses it to generate tensor dicts using multiple processes.</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- iterator: DataIterator</span><br></pre></td></tr></table></figure>
 <p>The <code>DataIterator</code> for generating tensor dicts. It will be shared among processes, so it should not be stateful in any way.</p>
 <p><code>self.iterator</code> <strong>cannot</strong> use <code>cache_instances</code> or <code>instances_per_epoch</code></p>
@@ -610,6 +613,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/06/allennlp-tokenizers/" rel="prev" title="AllenNLP源码解读 data.tokenizers">
+                AllenNLP源码解读 data.tokenizers <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -679,7 +686,7 @@
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

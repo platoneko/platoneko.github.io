@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext">
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="tokenclass TokenA simple token representation, keeping track of the token’s text, offset in the passage it was taken from, POS tag, dependency relation, and similar information.  These fields match sp">
+<meta name="keywords" content="NLP,AllenNLP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AllenNLP源码解读 data.tokenizers">
+<meta property="og:url" content="http://yoursite.com/2019/03/06/allennlp-tokenizers/index.html">
+<meta property="og:site_name" content="Platoneko&#39;s Notes">
+<meta property="og:description" content="tokenclass TokenA simple token representation, keeping track of the token’s text, offset in the passage it was taken from, POS tag, dependency relation, and similar information.  These fields match sp">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-03-06T07:29:04.400Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AllenNLP源码解读 data.tokenizers">
+<meta name="twitter:description" content="tokenclass TokenA simple token representation, keeping track of the token’s text, offset in the passage it was taken from, POS tag, dependency relation, and similar information.  These fields match sp">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/03/06/allennlp-tokenizers/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>AllenNLP源码解读 data.tokenizers | Platoneko's Notes</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Platoneko's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">A platonic fantast learning AI</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/06/allennlp-tokenizers/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="platoneko">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Platoneko's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AllenNLP源码解读 data.tokenizers
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-06 13:23:53 / Modified: 15:29:04" itemprop="dateCreated datePublished" datetime="2019-03-06T13:23:53+08:00">2019-03-06</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/AllenNLP/" itemprop="url" rel="index"><span itemprop="name">AllenNLP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="token"><a href="#token" class="headerlink" title="token"></a>token</h1><h2 id="class-Token"><a href="#class-Token" class="headerlink" title="class Token"></a>class <code>Token</code></h2><p>A simple token representation, keeping track of the token’s text, offset in the passage it was taken from, POS tag, dependency relation, and similar information.  These fields match spacy’s exactly, so we can just use a spacy token for this.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- text: str = None</span><br></pre></td></tr></table></figure>
+<p>The original text represented by this token.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- idx: int = None</span><br></pre></td></tr></table></figure>
+<p>The character offset of this token into the tokenized passage.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- lemma_: str = None</span><br></pre></td></tr></table></figure>
+<p>The lemma of this token.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- pos_: str = None</span><br></pre></td></tr></table></figure>
+<p>The coarse-grained part of speech of this token.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- tag_: str = None</span><br></pre></td></tr></table></figure>
+<p>The fine-grained part of speech of this token.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- dep_: str = None</span><br></pre></td></tr></table></figure>
+<p>The dependency relation for this token.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- ent_type: str = None</span><br></pre></td></tr></table></figure>
+<p>The entity type (i.e., the NER tag) for this token.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- text_id: int = None</span><br></pre></td></tr></table></figure>
+<p>If your tokenizer returns integers instead of strings (e.g., because you’re doing byte encoding, or some hash-based embedding), set this with the integer.  <strong>If this is set, we will bypass the vocabulary when indexing this token, regardless of whether <code>text</code> is also set.</strong>  You can also set <code>text</code> with the original text, if you want, so that you can still use a character-level representation in addition to a hash-based word embedding.</p>
+<p>The other fields on <code>Token</code> follow the fields on spacy’s <code>Token</code> object; this is one we added, similar to spacy’s <code>lex_id</code>.</p>
+<h1 id="tokenizer"><a href="#tokenizer" class="headerlink" title="tokenizer"></a>tokenizer</h1><h2 id="class-Tokenizer-Registrable"><a href="#class-Tokenizer-Registrable" class="headerlink" title="class Tokenizer(Registrable)"></a>class <code>Tokenizer(Registrable)</code></h2><p>A <code>Tokenizer</code> splits strings of text into tokens.  Typically, this <strong>either splits text into word tokens or character tokens</strong>, and those are the two tokenizer subclasses we have implemented here, though you could imagine wanting to do other kinds of tokenization for structured or other inputs.</p>
+<p>As part of tokenization, concrete implementations of this API will also handle stemming, stopword filtering, adding start and end tokens, or other kinds of things you might want to do to your tokens.  See the parameters to, e.g.:class:<code>~.WordTokenizer</code>, or whichever tokenizer you want to use.</p>
+<p>If the base input to your model is words, you should use a :class:<code>~.WordTokenizer</code>, even if you also want to have a character-level encoder to get an additional vector for each word token.  Splitting word tokens into character arrays is handled separately, in the :class:<code>..token_representations.TokenRepresentation</code> class.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- default_implementation = &apos;word&apos;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ batch_tokenize(self, texts: List[str]) -&gt; List[List[Token]] &lt;interface&gt;</span><br></pre></td></tr></table></figure>
+<p>Batches together tokenization of several texts, in case that is <strong>faster for particular tokenizers</strong>. Recommend!</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ tokenize(self, text: str) -&gt; List[Token] &lt;interface&gt;</span><br></pre></td></tr></table></figure>
+<p>Actually implements splitting words into tokens.</p>
+<h1 id="word-tokenizer"><a href="#word-tokenizer" class="headerlink" title="word_tokenizer"></a>word_tokenizer</h1><h2 id="class-WordTokenizer-Tokenizer"><a href="#class-WordTokenizer-Tokenizer" class="headerlink" title="class WordTokenizer(Tokenizer)"></a>class <code>WordTokenizer(Tokenizer)</code></h2><p>A <code>WordTokenizer</code> handles the <strong>splitting of strings into words</strong> as well as any desired <strong>post-processing</strong> (e.g., stemming, filtering, etc.).  Note that we leave one particular piece of post-processing for later: the decision of whether or not to lowercase the token.  This is for two reasons: (1) if you want to make two different casing decisions for whatever reason, you won’t have to run the tokenizer twice, and more importantly (2) if you want to lowercase words for your word embedding, but retain capitalization in a character-level representation, we need to retain the capitalization here.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _word_splitter: WordSplitter = SpacyWordSplitter()</span><br></pre></td></tr></table></figure>
+<p>Splitting text strings into word tokens.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _word_filter: WordFilter = PassThroughWordFilter()</span><br></pre></td></tr></table></figure>
+<p>Default is to do no filtering.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _word_stemmer: WordStemmer = PassThroughWordStemmer()</span><br></pre></td></tr></table></figure>
+<p>Default is no stemming.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _start_tokens: List[str] = None</span><br></pre></td></tr></table></figure>
+<p>If given, these tokens will be added to the beginning of every string we tokenize.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- _end_tokens: List[str] = None</span><br></pre></td></tr></table></figure>
+<p>If given, these tokens will be added to the end of every string we tokenize.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+ __init__(self,</span><br><span class="line">           word_splitter: WordSplitter = None,</span><br><span class="line">           word_filter: WordFilter = PassThroughWordFilter(),</span><br><span class="line">           word_stemmer: WordStemmer = PassThroughWordStemmer(),</span><br><span class="line">           start_tokens: List[str] = None,</span><br><span class="line">           end_tokens: List[str] = None)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ @overrides tokenize(self, text: str) -&gt; List[Token]</span><br></pre></td></tr></table></figure>
+<p>Splitting, filtering and stemming.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ @overrides batch_tokenize(self, texts: List[str]) -&gt; List[List[Token]]</span><br></pre></td></tr></table></figure>
+<p>Batch版的tokenize， 速度更快。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ _filter_and_stem(self, words: List[Token]) -&gt; List[Token]</span><br></pre></td></tr></table></figure>
+<h1 id="word-stemmer"><a href="#word-stemmer" class="headerlink" title="word_stemmer"></a>word_stemmer</h1><h2 id="class-WordStemmer-Registrable"><a href="#class-WordStemmer-Registrable" class="headerlink" title="class WordStemmer(Registrable)"></a>class <code>WordStemmer(Registrable)</code></h2><p>A <code>WordStemmer</code> lemmatizes words.  This means that we map words to their root form, so that, e.g., “have”, “has”, and “had” all have the same internal representation.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- default_implementation = &apos;pass_through&apos;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ stem_word(self, word: Token) -&gt; Token &lt;interface&gt;</span><br></pre></td></tr></table></figure>
+<p>Returns a new <code>Token</code> with <code>word.text</code> replaced by a stemmed word.</p>
+<h2 id="class-PassThroughWordStemmer-WordStemmer"><a href="#class-PassThroughWordStemmer-WordStemmer" class="headerlink" title="class PassThroughWordStemmer(WordStemmer)"></a>class <code>PassThroughWordStemmer(WordStemmer)</code></h2><p><code>@WordStemmer.register(&#39;pass_through&#39;)</code></p>
+<h2 id="class-PorterStemmer-WordStemmer"><a href="#class-PorterStemmer-WordStemmer" class="headerlink" title="class PorterStemmer(WordStemmer)"></a>class <code>PorterStemmer(WordStemmer)</code></h2><p><code>@WordStemmer.register(&#39;porter&#39;)</code></p>
+<p>Uses NLTK’s PorterStemmer to stem words.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- stemmer = NltkPorterStemmer()</span><br></pre></td></tr></table></figure>
+<h1 id="word-splitter"><a href="#word-splitter" class="headerlink" title="word_splitter"></a>word_splitter</h1><h2 id="class-WordSplitter-Registrable"><a href="#class-WordSplitter-Registrable" class="headerlink" title="class WordSplitter(Registrable)"></a>class <code>WordSplitter(Registrable)</code></h2><p>A <code>WordSplitter</code> splits strings into words.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- default_implementation = &apos;spacy&apos;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ batch_split_words(self, sentences: List[str]) -&gt; List[List[Token]] &lt;interface, optional&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ split_words(self, sentence: str) -&gt; List[Token] &lt;interface&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="class-SimpleWordSplitter-WordSplitter"><a href="#class-SimpleWordSplitter-WordSplitter" class="headerlink" title="class SimpleWordSplitter(WordSplitter)"></a>class <code>SimpleWordSplitter(WordSplitter)</code></h2><p><code>@WordSplitter.register(&#39;simple&#39;)</code></p>
+<h2 id="class-LettersDigitsWordSplitter-WordSplitter"><a href="#class-LettersDigitsWordSplitter-WordSplitter" class="headerlink" title="class LettersDigitsWordSplitter(WordSplitter)"></a>class <code>LettersDigitsWordSplitter(WordSplitter)</code></h2><p><code>@WordSplitter.register(&#39;letters_digits&#39;)</code></p>
+<h2 id="class-JustSpacesWordSplitter-WordSplitter"><a href="#class-JustSpacesWordSplitter-WordSplitter" class="headerlink" title="class JustSpacesWordSplitter(WordSplitter)"></a>class <code>JustSpacesWordSplitter(WordSplitter)</code></h2><p><code>@WordSplitter.register(&#39;just_spaces&#39;)</code></p>
+<h2 id="class-SpacyWordSplitter-WordSplitter"><a href="#class-SpacyWordSplitter-WordSplitter" class="headerlink" title="class SpacyWordSplitter(WordSplitter)"></a>class <code>SpacyWordSplitter(WordSplitter)</code></h2><p><code>@WordSplitter.register(&#39;spacy&#39;)</code></p>
+<h2 id="class-OpenAISplitter-WordSplitter"><a href="#class-OpenAISplitter-WordSplitter" class="headerlink" title="class OpenAISplitter(WordSplitter)"></a>class <code>OpenAISplitter(WordSplitter)</code></h2><p><code>@WordSplitter.register(&#39;openai&#39;)</code></p>
+<p>For OpenAI transformer</p>
+<h2 id="class-BertBasicWordSplitter-WordSplitter"><a href="#class-BertBasicWordSplitter-WordSplitter" class="headerlink" title="class BertBasicWordSplitter(WordSplitter)"></a>class <code>BertBasicWordSplitter(WordSplitter)</code></h2><p><code>@WordSplitter.register(&quot;bert-basic&quot;)</code></p>
+<p>The <code>BasicWordSplitter</code> from the BERT implementation. This is used to split a sentence into words. Then the <code>BertTokenIndexer</code> converts each word into wordpieces.</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/NLP/" rel="tag"># NLP</a>
+          
+            <a href="/tags/AllenNLP/" rel="tag"># AllenNLP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/05/allennlp-iterators/" rel="next" title="AllenNLP源码解读 data.iterators">
+                <i class="fa fa-chevron-left"></i> AllenNLP源码解读 data.iterators
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">platoneko</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#token"><span class="nav-number">1.</span> <span class="nav-text">token</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-Token"><span class="nav-number">1.1.</span> <span class="nav-text">class Token</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tokenizer"><span class="nav-number">2.</span> <span class="nav-text">tokenizer</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-Tokenizer-Registrable"><span class="nav-number">2.1.</span> <span class="nav-text">class Tokenizer(Registrable)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#word-tokenizer"><span class="nav-number">3.</span> <span class="nav-text">word_tokenizer</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-WordTokenizer-Tokenizer"><span class="nav-number">3.1.</span> <span class="nav-text">class WordTokenizer(Tokenizer)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#word-stemmer"><span class="nav-number">4.</span> <span class="nav-text">word_stemmer</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-WordStemmer-Registrable"><span class="nav-number">4.1.</span> <span class="nav-text">class WordStemmer(Registrable)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-PassThroughWordStemmer-WordStemmer"><span class="nav-number">4.2.</span> <span class="nav-text">class PassThroughWordStemmer(WordStemmer)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-PorterStemmer-WordStemmer"><span class="nav-number">4.3.</span> <span class="nav-text">class PorterStemmer(WordStemmer)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#word-splitter"><span class="nav-number">5.</span> <span class="nav-text">word_splitter</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#class-WordSplitter-Registrable"><span class="nav-number">5.1.</span> <span class="nav-text">class WordSplitter(Registrable)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-SimpleWordSplitter-WordSplitter"><span class="nav-number">5.2.</span> <span class="nav-text">class SimpleWordSplitter(WordSplitter)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-LettersDigitsWordSplitter-WordSplitter"><span class="nav-number">5.3.</span> <span class="nav-text">class LettersDigitsWordSplitter(WordSplitter)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-JustSpacesWordSplitter-WordSplitter"><span class="nav-number">5.4.</span> <span class="nav-text">class JustSpacesWordSplitter(WordSplitter)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-SpacyWordSplitter-WordSplitter"><span class="nav-number">5.5.</span> <span class="nav-text">class SpacyWordSplitter(WordSplitter)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-OpenAISplitter-WordSplitter"><span class="nav-number">5.6.</span> <span class="nav-text">class OpenAISplitter(WordSplitter)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#class-BertBasicWordSplitter-WordSplitter"><span class="nav-number">5.7.</span> <span class="nav-text">class BertBasicWordSplitter(WordSplitter)</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">platoneko</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.min.js"></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.ui.min.js"></script>
+
+  
+  <script src="/lib/three/three.min.js"></script>
+
+  
+  <script src="/lib/three/three-waves.min.js"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
