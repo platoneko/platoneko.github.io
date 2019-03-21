@@ -122,36 +122,25 @@
 
 
 
-  <meta name="description" content="平方根式：1$$r=\sqrt&amp;#123;x^2+y^2&amp;#125;$$ r=\sqrt{x^2+y^2}分数式：1$$P=\frac&amp;#123;TP&amp;#125;&amp;#123;TP+FP&amp;#125;$$ P=\frac{TP}{TP+FP}">
-<meta name="keywords" content="etc">
+  <meta name="description" content="接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（以下论述主要是一些通俗理解，追求数学严谨的同学请移步） 交叉熵是信息论中的一个概念，要想了解交叉熵">
+<meta name="keywords" content="deep learning,machine learning">
 <meta property="og:type" content="article">
-<meta property="og:title" content="markdown数学表达式">
-<meta property="og:url" content="http://yoursite.com/2019/02/27/markdown-math-expression/index.html">
+<meta property="og:title" content="关于交叉熵的一些理解">
+<meta property="og:url" content="http://yoursite.com/2019/03/21/cross-entropy/index.html">
 <meta property="og:site_name" content="Platoneko&#39;s Notes">
-<meta property="og:description" content="平方根式：1$$r=\sqrt&amp;#123;x^2+y^2&amp;#125;$$ r=\sqrt{x^2+y^2}分数式：1$$P=\frac&amp;#123;TP&amp;#125;&amp;#123;TP+FP&amp;#125;$$ P=\frac{TP}{TP+FP}">
+<meta property="og:description" content="接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（以下论述主要是一些通俗理解，追求数学严谨的同学请移步） 交叉熵是信息论中的一个概念，要想了解交叉熵">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/img/markdown-math-expression/markdown-math-expression-f1.png">
-<meta property="og:image" content="http://yoursite.com/img/markdown-math-expression/markdown-math-expression-f2.png">
-<meta property="og:image" content="http://yoursite.com/img/markdown-math-expression/markdown-math-expression-f3.png">
-<meta property="og:image" content="http://yoursite.com/img/markdown-math-expression/markdown-math-expression-f4.png">
-<meta property="og:image" content="http://yoursite.com/img/markdown-math-expression/markdown-math-expression-f5.png">
-<meta property="og:image" content="http://yoursite.com/img/markdown-math-expression/markdown-math-expression-f6.png">
-<meta property="og:image" content="http://yoursite.com/img/markdown-math-expression/markdown-math-expression-f7.png">
-<meta property="og:image" content="http://yoursite.com/img/markdown-math-expression/markdown-math-expression-f8.png">
-<meta property="og:image" content="http://yoursite.com/img/markdown-math-expression/markdown-math-expression-f9.png">
-<meta property="og:image" content="http://yoursite.com/img/markdown-math-expression/markdown-math-expression-f10.png">
-<meta property="og:updated_time" content="2019-02-27T17:15:11.787Z">
+<meta property="og:updated_time" content="2019-03-21T05:48:38.007Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="markdown数学表达式">
-<meta name="twitter:description" content="平方根式：1$$r=\sqrt&amp;#123;x^2+y^2&amp;#125;$$ r=\sqrt{x^2+y^2}分数式：1$$P=\frac&amp;#123;TP&amp;#125;&amp;#123;TP+FP&amp;#125;$$ P=\frac{TP}{TP+FP}">
-<meta name="twitter:image" content="http://yoursite.com/img/markdown-math-expression/markdown-math-expression-f1.png">
+<meta name="twitter:title" content="关于交叉熵的一些理解">
+<meta name="twitter:description" content="接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（以下论述主要是一些通俗理解，追求数学严谨的同学请移步） 交叉熵是信息论中的一个概念，要想了解交叉熵">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/02/27/markdown-math-expression/">
+  <link rel="canonical" href="http://yoursite.com/2019/03/21/cross-entropy/">
 
 
 
@@ -161,7 +150,7 @@
   };
 </script>
 
-  <title>markdown数学表达式 | Platoneko's Notes</title>
+  <title>关于交叉熵的一些理解 | Platoneko's Notes</title>
   
 
 
@@ -364,7 +353,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/27/markdown-math-expression/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/21/cross-entropy/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="platoneko">
@@ -381,7 +370,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">markdown数学表达式
+          <h1 class="post-title" itemprop="name headline">关于交叉熵的一些理解
 
               
             
@@ -407,24 +396,12 @@
                 
               
 
-              <time title="Created: 2019-02-27 23:23:15" itemprop="dateCreated datePublished" datetime="2019-02-27T23:23:15+08:00">2019-02-27</time>
+              <time title="Created: 2019-03-21 09:07:36 / Modified: 13:48:38" itemprop="dateCreated datePublished" datetime="2019-03-21T09:07:36+08:00">2019-03-21</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-02-28 01:15:11" itemprop="dateModified" datetime="2019-02-28T01:15:11+08:00">2019-02-28</time>
               
             
           </span>
@@ -441,7 +418,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Uncategorized/" itemprop="url" rel="index"><span itemprop="name">Uncategorized</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/deep-learning/" itemprop="url" rel="index"><span itemprop="name">deep learning</span></a></span>
 
                 
                 
@@ -483,41 +460,22 @@
       
 
       
-        <p>平方根式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$$r=\sqrt&#123;x^2+y^2&#125;$$</span><br></pre></td></tr></table></figure></p>
-<script type="math/tex; mode=display">r=\sqrt{x^2+y^2}</script><p>分数式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$$P=\frac&#123;TP&#125;&#123;TP+FP&#125;$$</span><br></pre></td></tr></table></figure></p>
-<script type="math/tex; mode=display">P=\frac{TP}{TP+FP}</script><a id="more"></a>
-<p>求和与连乘：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$$\sum_&#123;i=0&#125;^n\prod_&#123;i=0&#125;^n$$</span><br></pre></td></tr></table></figure></p>
-<script type="math/tex; mode=display">\sum_{i=0}^n\prod_{i=0}^n</script><p>积分：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$$\int_0^&#123;\pi&#125;f(x)\,dx$$</span><br></pre></td></tr></table></figure></p>
-<script type="math/tex; mode=display">\int_0^{\pi}f(x)\,dx</script><p>极限：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$$\lim_&#123;x \to + \infty&#125;\frac&#123;1&#125;&#123;x&#125;$$</span><br></pre></td></tr></table></figure></p>
-<script type="math/tex; mode=display">\lim_{x \to + \infty}\frac{1}{x}</script><p>偏导：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$$\frac&#123;\partial^2 u&#125;&#123;\partial x \partial y&#125;$$</span><br></pre></td></tr></table></figure></p>
-<script type="math/tex; mode=display">\frac{\partial^2 u}{\partial x \partial y}</script><p>矩阵：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$$</span><br><span class="line">A=\left[</span><br><span class="line">\begin&#123;matrix&#125;</span><br><span class="line">18&amp;21&amp;6\\</span><br><span class="line">21&amp;25&amp;7\\</span><br><span class="line">6&amp;7&amp;2</span><br><span class="line">\end&#123;matrix&#125;</span><br><span class="line">\right]</span><br><span class="line">$$</span><br></pre></td></tr></table></figure></p>
-<script type="math/tex; mode=display">
-A=\left[
-\begin{matrix}
-18&21&6\\
-21&25&7\\
-6&7&2
-\end{matrix}
-\right]</script><p>分段函数式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$$</span><br><span class="line">y_i&#123;\cdot&#125;g(x_i)=</span><br><span class="line">\begin&#123;cases&#125;</span><br><span class="line">\ge 1, \,\,\,\, \&#123;x_i \mid \alpha_i = 0\&#125;\\</span><br><span class="line">= 1, \,\,\,\, \&#123;x_i \mid 0 \lt \alpha_i \lt C\&#125;\\</span><br><span class="line">\le 1, \,\,\,\, \&#123;x_i \mid \alpha_i = C\&#125;</span><br><span class="line">\end&#123;cases&#125;</span><br><span class="line">$$</span><br></pre></td></tr></table></figure></p>
-<script type="math/tex; mode=display">
-y_i{\cdot}g(x_i)=
-\begin{cases}
-\ge 1, \,\,\,\, \{x_i \mid \alpha_i = 0\}\\
-= 1, \,\,\,\, \{x_i \mid 0 \lt \alpha_i \lt C\}\\
-\le 1, \,\,\,\, \{x_i \mid \alpha_i = C\}
-\end{cases}</script><p>数学符号表：</p>
-<p><div align="center"> <img src="/img/markdown-math-expression/markdown-math-expression-f1.png" alt=""></div></p>
-<p><div align="center"> <img src="/img/markdown-math-expression/markdown-math-expression-f2.png" alt=""></div></p>
-<p><div align="center"> <img src="/img/markdown-math-expression/markdown-math-expression-f3.png" alt=""></div></p>
-<p><div align="center"> <img src="/img/markdown-math-expression/markdown-math-expression-f4.png" alt=""></div></p>
-<p><div align="center"> <img src="/img/markdown-math-expression/markdown-math-expression-f5.png" alt=""></div></p>
-<p><div align="center"> <img src="/img/markdown-math-expression/markdown-math-expression-f6.png" alt=""></div></p>
-<p><div align="center"> <img src="/img/markdown-math-expression/markdown-math-expression-f7.png" alt=""></div></p>
-<p><div align="center"> <img src="/img/markdown-math-expression/markdown-math-expression-f8.png" alt=""></div></p>
-<p><div align="center"> <img src="/img/markdown-math-expression/markdown-math-expression-f9.png" alt=""></div></p>
-<p><div align="center"> <img src="/img/markdown-math-expression/markdown-math-expression-f10.png" alt=""></div></p>
-<p><br><br><br></p>
-<p>参考来源：<a href="http://www.mohu.org/info/lshort-cn.pdf" target="_blank" rel="noopener">http://www.mohu.org/info/lshort-cn.pdf</a></p>
+        <p>接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（<em>以下论述主要是一些通俗理解，追求数学严谨的同学请移步</em>）</p>
+<p>交叉熵是信息论中的一个概念，要想了解交叉熵的本质，就需要从最基本的概念说起。</p>
+<h1 id="1-信息量"><a href="#1-信息量" class="headerlink" title="1.信息量"></a>1.信息量</h1><p>假设 $X$ 是一个离散型随机变量，其取值集合为 $\chi$，概率分布函数 $p(x)=P(X=x), x \in \chi$，则定义事件 $X=x_0$ 的信息量为：</p>
+<script type="math/tex; mode=display">I(x_0)=- \log (p(x_0))</script><p>直观来看，信息量和事件发生的概率有关，越不可能发生的事件发生了，我们获取到的信息量就越大，而那些司空见惯的事发生了，我们获取到的信息量就很少，<strong>即信息量可以表示一个事件的自信息量</strong>。从另一角度看，信息量也可以衡量一个事件的不确定度，也就是说我们需要加入多少信息才能将该事件的发生确定下来，<strong>事件的不确定性越大，信息量也就越大，把它搞清楚所需要的信息量也就越大</strong>。</p>
+<h1 id="2-信息熵"><a href="#2-信息熵" class="headerlink" title="2.信息熵"></a>2.信息熵</h1><p>信息熵是随机变量的信息量的期望：</p>
+<script type="math/tex; mode=display">H(X) = - {\sum}_{i=1}^n p(x_i) \log (p(x_i))</script><p>广义的熵可以衡量一个系统的有序化程度（或混乱程度），可以证明，一个系统越是混乱不确定（均匀分布），熵就越大。信息熵用于衡量数据的信息量时，可以得到对数据进行编码所需的最短平均编码长度，当平均编码长度大于信息熵时可以认为编码存在冗余。</p>
+<h1 id="3-KL散度（相对熵）"><a href="#3-KL散度（相对熵）" class="headerlink" title="3. KL散度（相对熵）"></a>3. KL散度（相对熵）</h1><p>如果我们对于同一个随机变量 $X$ 有两个单独的概率分布 $P(X)$ 和 $Q(X)$，我们可以使用KL散度来衡量这两个分布的差异（<strong>不是距离，因为不具备对称性！</strong>）</p>
+<script type="math/tex; mode=display">KL(p \mid \mid q)= {\sum}_{i=1}^n p(x_i) \log (\frac{p(x_i)}{q(x_i)})</script><p>在机器学习中，$KL(P \mid \mid Q)$ 通常用来描述使用真实分布 $P$ 取代估计分布 $Q$ 时的信息增益。</p>
+<p>KL散度的值越小，表示 $P$ 分布和 $Q$ 分布越接近。</p>
+<p>（这里还有对KL散度的另一种解读：KL散度的意义是“额外所需的编码长度”如果我们用B的编码来表示A）</p>
+<h1 id="4-交叉熵"><a href="#4-交叉熵" class="headerlink" title="4. 交叉熵"></a>4. 交叉熵</h1><p>直接给出公式：</p>
+<script type="math/tex; mode=display">\begin{aligned}
+H(p, q) &= {\sum}_{i=1}^n p(x_i) \log (\frac{1}{q(x_i)})\\
+        &= - {\sum}_{i=1}^n p(x_i) \log q(x_i)
+\end{aligned}</script><p>可以发现 $KL(p \mid \mid q) = H(p,q)-H(p)$，在机器学习中，我们需要评估<strong>某个样本</strong>的label和predicts之间的差距，使用KL散度刚刚好，由于KL散度中的 $H(p)$ 一直保持不变，故优化中只需要关注交叉熵即可。</p>
+<p>重点开始：深度学习/机器学习中大部分任务都可以看作分类任务，我们这里说的分布 $p$ 和 分布 $q$ 是针对对数据集中的<strong>某一个</strong>样本 $x$ 的label而言，而不是整个数据集中的所有样本的label分布。 我们的任务是训练一个函数，向函数中输入一个样本 $x$ 可以得到其label的<strong>概率分布列</strong> $\vec{P}(Y=y \mid x)$，训练的目标是对每个已观测到的样本 $(x,y)$，通过这个函数计算出的label分布列都要和观测的真实分布列尽可能接近。对于每个样本 $x$ 只有一种确定的label的情况（通常情况如此），其真实概率分布列 $p$ 其实是一个形如 $[0,1,0,0,0]$ 的向量，其信息熵 $H(p)$ 通过公式计算的结果为0（这也印证了对于已观测到的样本，其label的概率分布已知，不确定度为0），可以认为深度学习/机器学习中对常见分类任务使用的交叉熵其实就是”退化“的KL散度；由于样本真实概率分布 $p$ 为形如 $[0,1,0,0,0]$ 的向量，交叉熵 $H(p,q)$ 也只剩下真实概率分布中数值为1对应的项，此时交叉熵就完全等价于极大对数似然估计了，其优化目标是最大化已观测样本的 $(x,y)$ 的出现概率。</p>
 
       
     </div>
@@ -541,7 +499,9 @@ y_i{\cdot}g(x_i)=
       
         <div class="post-tags">
           
-            <a href="/tags/etc/" rel="tag"># etc</a>
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
           
         </div>
       
@@ -554,15 +514,15 @@ y_i{\cdot}g(x_i)=
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2019/03/06/allennlp-tokenizers/" rel="next" title="AllenNLP源码解读 data.tokenizers">
+                <i class="fa fa-chevron-left"></i> AllenNLP源码解读 data.tokenizers
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/02/28/knowledge-based-text-generation/" rel="prev" title="基于知识的对话系统">
-                基于知识的对话系统 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -607,8 +567,17 @@ y_i{\cdot}g(x_i)=
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -700,6 +669,23 @@ y_i{\cdot}g(x_i)=
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-信息量"><span class="nav-number">1.</span> <span class="nav-text">1.信息量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-信息熵"><span class="nav-number">2.</span> <span class="nav-text">2.信息熵</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-KL散度（相对熵）"><span class="nav-number">3.</span> <span class="nav-text">3. KL散度（相对熵）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-交叉熵"><span class="nav-number">4.</span> <span class="nav-text">4. 交叉熵</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
