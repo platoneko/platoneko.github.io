@@ -122,25 +122,30 @@
 
 
 
-  <meta name="description" content="接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（以下论述主要是一些通俗理解，追求数学严谨的同学请移步） 交叉熵是信息论中的一个概念，要想了解交叉熵">
-<meta name="keywords" content="deep learning,machine learning">
+  <meta name="description" content="开始涉猎个性化的聊天系统，这周时间较紧，只阅读了两篇相关paper。 Personalized Dialogue Generation with Diversified Traitshttps://arxiv.org/pdf/1901.09672.pdf  Contributions  针对如何将personality traits融入生成式对话系统，论文中给出的模型还是比较简单的：沿用encod">
+<meta name="keywords" content="NLP,deep learning,NLG,dialogue system,common sense,papers">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于交叉熵的一些理解">
-<meta property="og:url" content="http://yoursite.com/2019/03/21/cross-entropy/index.html">
+<meta property="og:title" content="cciip week1 论文阅读">
+<meta property="og:url" content="http://yoursite.com/2019/04/04/cciip-week1/index.html">
 <meta property="og:site_name" content="Platoneko&#39;s Notes">
-<meta property="og:description" content="接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（以下论述主要是一些通俗理解，追求数学严谨的同学请移步） 交叉熵是信息论中的一个概念，要想了解交叉熵">
+<meta property="og:description" content="开始涉猎个性化的聊天系统，这周时间较紧，只阅读了两篇相关paper。 Personalized Dialogue Generation with Diversified Traitshttps://arxiv.org/pdf/1901.09672.pdf  Contributions  针对如何将personality traits融入生成式对话系统，论文中给出的模型还是比较简单的：沿用encod">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-21T05:48:38.007Z">
+<meta property="og:image" content="http://yoursite.com/img/cciip-week1/cciip-week1-f0.png">
+<meta property="og:image" content="http://yoursite.com/img/cciip-week1/cciip-week1-f1.png">
+<meta property="og:image" content="http://yoursite.com/img/cciip-week1/cciip-week1-f2.png">
+<meta property="og:image" content="http://yoursite.com/img/cciip-week1/cciip-week1-f3.png">
+<meta property="og:updated_time" content="2019-04-04T00:55:28.289Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于交叉熵的一些理解">
-<meta name="twitter:description" content="接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（以下论述主要是一些通俗理解，追求数学严谨的同学请移步） 交叉熵是信息论中的一个概念，要想了解交叉熵">
+<meta name="twitter:title" content="cciip week1 论文阅读">
+<meta name="twitter:description" content="开始涉猎个性化的聊天系统，这周时间较紧，只阅读了两篇相关paper。 Personalized Dialogue Generation with Diversified Traitshttps://arxiv.org/pdf/1901.09672.pdf  Contributions  针对如何将personality traits融入生成式对话系统，论文中给出的模型还是比较简单的：沿用encod">
+<meta name="twitter:image" content="http://yoursite.com/img/cciip-week1/cciip-week1-f0.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/03/21/cross-entropy/">
+  <link rel="canonical" href="http://yoursite.com/2019/04/04/cciip-week1/">
 
 
 
@@ -150,7 +155,7 @@
   };
 </script>
 
-  <title>关于交叉熵的一些理解 | Platoneko's Notes</title>
+  <title>cciip week1 论文阅读 | Platoneko's Notes</title>
   
 
 
@@ -353,7 +358,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/21/cross-entropy/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/04/cciip-week1/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="platoneko">
@@ -370,7 +375,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">关于交叉熵的一些理解
+          <h1 class="post-title" itemprop="name headline">cciip week1 论文阅读
 
               
             
@@ -396,7 +401,7 @@
                 
               
 
-              <time title="Created: 2019-03-21 09:07:36 / Modified: 13:48:38" itemprop="dateCreated datePublished" datetime="2019-03-21T09:07:36+08:00">2019-03-21</time>
+              <time title="Created: 2019-04-04 06:13:51 / Modified: 08:55:28" itemprop="dateCreated datePublished" datetime="2019-04-04T06:13:51+08:00">2019-04-04</time>
             
 
             
@@ -418,7 +423,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/deep-learning/" itemprop="url" rel="index"><span itemprop="name">deep learning</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
 
                 
                 
@@ -460,23 +465,72 @@
       
 
       
-        <p>接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（<em>以下论述主要是一些通俗理解，追求数学严谨的同学请移步</em>）</p>
-<p>交叉熵是信息论中的一个概念，要想了解交叉熵的本质，就需要从最基本的概念说起。</p>
-<h1 id="1-信息量"><a href="#1-信息量" class="headerlink" title="1.信息量"></a>1.信息量</h1><p>假设 $X$ 是一个离散型随机变量，其取值集合为 $\chi$，概率分布函数 $p(x)=P(X=x), x \in \chi$，则定义事件 $X=x_0$ 的信息量为：</p>
-<script type="math/tex; mode=display">I(x_0)=- \log (p(x_0))</script><p>直观来看，信息量和事件发生的概率有关，越不可能发生的事件发生了，我们获取到的信息量就越大，而那些司空见惯的事发生了，我们获取到的信息量就很少，<strong>即信息量可以表示一个事件的自信息量</strong>。从另一角度看，信息量也可以衡量一个事件的不确定度，也就是说我们需要加入多少信息才能将该事件的发生确定下来，<strong>事件的不确定性越大，信息量也就越大，把它搞清楚所需要的信息量也就越大</strong>。</p>
-<h1 id="2-信息熵"><a href="#2-信息熵" class="headerlink" title="2.信息熵"></a>2.信息熵</h1><p>信息熵是随机变量的信息量的期望：</p>
-<script type="math/tex; mode=display">H(X) = - {\sum}_{i=1}^n p(x_i) \log (p(x_i))</script><p>广义的熵可以衡量一个系统的有序化程度（或混乱程度），可以证明，一个系统越是混乱不确定（均匀分布），熵就越大。信息熵用于衡量数据的信息量时，可以得到对数据进行编码所需的最短平均编码长度，当平均编码长度大于信息熵时可以认为编码存在冗余。</p>
-<h1 id="3-KL散度（相对熵）"><a href="#3-KL散度（相对熵）" class="headerlink" title="3. KL散度（相对熵）"></a>3. KL散度（相对熵）</h1><p>如果我们对于同一个随机变量 $X$ 有两个单独的概率分布 $P(X)$ 和 $Q(X)$，我们可以使用KL散度来衡量这两个分布的差异（<strong>不是距离，因为不具备对称性！</strong>）</p>
-<script type="math/tex; mode=display">KL(p \mid \mid q)= {\sum}_{i=1}^n p(x_i) \log (\frac{p(x_i)}{q(x_i)})</script><p>在机器学习中，$KL(P \mid \mid Q)$ 通常用来描述使用真实分布 $P$ 取代估计分布 $Q$ 时的信息增益。</p>
-<p>KL散度的值越小，表示 $P$ 分布和 $Q$ 分布越接近。</p>
-<p>（这里还有对KL散度的另一种解读：KL散度的意义是“额外所需的编码长度”如果我们用B的编码来表示A）</p>
-<h1 id="4-交叉熵"><a href="#4-交叉熵" class="headerlink" title="4. 交叉熵"></a>4. 交叉熵</h1><p>直接给出公式：</p>
-<script type="math/tex; mode=display">\begin{aligned}
-H(p, q) &= {\sum}_{i=1}^n p(x_i) \log (\frac{1}{q(x_i)})\\
-        &= - {\sum}_{i=1}^n p(x_i) \log q(x_i)
-\end{aligned}</script><p>可以发现 $KL(p \mid \mid q) = H(p,q)-H(p)$，在机器学习中，我们需要评估<strong>某个样本</strong>的label和predicts之间的差距，使用KL散度刚刚好，由于KL散度中的 $H(p)$ 一直保持不变，故优化中只需要关注交叉熵即可。</p>
-<p>重点开始：深度学习/机器学习中大部分任务都可以看作分类任务，我们这里说的分布 $p$ 和 分布 $q$ 是针对对数据集中的<strong>某一个</strong>样本 $x$ 的label而言，而不是整个数据集中的所有样本的label分布。 我们的任务是训练一个函数，向函数中输入一个样本 $x$ 可以得到其label的<strong>概率分布列</strong> $\vec{P}(Y=y \mid x)$，训练的目标是对每个已观测到的样本 $(x,y)$，通过这个函数计算出的label分布列都要和观测的真实分布列尽可能接近。对于每个样本 $x$ 只有一种确定的label的情况（通常情况如此），其真实概率分布列 $p$ 其实是一个形如 $[0,1,0,0,0]$ 的向量，其信息熵 $H(p)$ 通过公式计算的结果为0（这也印证了对于已观测到的样本，其label的概率分布已知，不确定度为0），可以认为深度学习/机器学习中对常见分类任务使用的交叉熵其实就是”退化“的KL散度；由于样本真实概率分布 $p$ 为形如 $[0,1,0,0,0]$ 的向量，交叉熵 $H(p,q)$ 也只剩下真实概率分布中数值为1对应的项，此时交叉熵就完全等价于极大对数似然估计了，其优化目标是最大化已观测样本的 $(x,y)$ 的出现概率。</p>
+        <p>开始涉猎个性化的聊天系统，这周时间较紧，只阅读了两篇相关paper。</p>
+<h1 id="Personalized-Dialogue-Generation-with-Diversified-Traits"><a href="#Personalized-Dialogue-Generation-with-Diversified-Traits" class="headerlink" title="Personalized Dialogue Generation with Diversified Traits"></a><strong>Personalized Dialogue Generation with Diversified Traits</strong></h1><p><a href="https://arxiv.org/pdf/1901.09672.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1901.09672.pdf</a></p>
+<blockquote>
+<p><strong>Contributions</strong></p>
+</blockquote>
+<p>针对如何将personality traits融入生成式对话系统，论文中给出的模型还是比较简单的：沿用encoder-decoder框架，在decoder上尝试了一种基于注意力机制的 <em>persona-aware attention</em> 模型和另一种直接在输出预测词的时候加入 <em>persona-aware bias</em> 的模型。个人认为论文的最大贡献在于，为研究者构建了第一个包含真实对话数据和每个说话者的不同个性特征的大型数据集（个性化对话系统的一个主要问题就是缺少数据集）。</p>
+<blockquote>
+<p><strong>Task Defination</strong></p>
+</blockquote>
+<p>给出一条utterance $X= x_1,x_2, \dots ,x_n$ 和一个回复者的个性化特征 $T = \{ t_1, t_2, \dots ,t_N \}$ 系统应该生成一个回复 $Y = y_1, y_2, \dots , y_m$：</p>
+<script type="math/tex; mode=display">
+Y^* = \arg \max_{Y} P(Y \mid X,T)</script><p>其中每个个性化特征 $t_i \in T$ 以键值对形式 $t_i = \lt k_i, v_i \gt$ 表示。</p>
+<blockquote>
+<p><strong>Model</strong></p>
+</blockquote>
+<div align="center"><img src="/img/cciip-week1/cciip-week1-f0.png"></div>
 
+<ol>
+<li><p><strong>Personality Trait Fusion</strong></p>
+<p>第一个要解决的问题就是如何将一个对话者的个性化特征映射成一个分布式实向量。</p>
+<p>作者首先将 $T$ 中的所有traits编码成traits repesentation： $\{ v_{t_1},  v_{t_2} , \dots , v_{t_N}\}$。之后作者尝试了三种persona representation方式：</p>
+<ul>
+<li><p><strong>Traits Attention</strong></p>
+<p>通过计算decoder的当前时间步的状态 $s_t$ 与traits representation的相似度，对traits representation做注意力加权平均：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+v_p  &= \sum_{i=1}^N \alpha_i v_{t_i}\\
+\alpha_i &= \frac{exp(e_i)}{\sum_j^N exp(e_j))}\\
+e_i &= MLP(s_{t-1},v_t)\\
+&=\bar{V}^T \tanh (\bar{w_{\alpha}^1} s_{t-1} + \bar{w_{\alpha}^2} v_{t_i} )
+\end{aligned}</script></li>
+<li><p><strong>Traits Average</strong></p>
+<p>直接将traits representation的平均值作为persona representation。</p>
+</li>
+<li><p><strong>Traits Concatenation</strong></p>
+<p>顾名思义，简单拼接，不过traits representation的编码长度变为上面两种的1/N，N为traits个数。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Decoding with Persona Representation</strong></p>
+<ul>
+<li><p><strong>Persona-Aware Attention(PAA)</strong></p>
+<p>模型在基于attention机制的decoder上，在计算attention值时考虑了加入了persona representation：</p>
+<script type="math/tex; mode=display">
+e_i = V \tanh (w_\alpha^1 s_{t-1} + w_\alpha^2 h_i + w_\alpha^3 v_p)</script></li>
+<li><p><strong>Persona-Aware Bias</strong></p>
+<p>在输出层处结合persona representation $v_p$ 直接对输出层加入个性化偏移来获得生成单词的分布:</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+y_t &= softmax(a_t W_o^1 s_t  + (1 - a_t) W_o^2 v_p + b_{out})\\
+a_t &= \sigma (V_o^T s_t)
+\end{aligned}</script></li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><strong>Experiment</strong></p>
+</blockquote>
+<div align="center"><img src="/img/cciip-week1/cciip-week1-f1.png" width="400"></div>
+
+<div align="center"><img src="/img/cciip-week1/cciip-week1-f2.png" width="400"></div>
+
+<div align="center"><img src="/img/cciip-week1/cciip-week1-f3.png" width="400"></div>
+
+<p>从实验结果来看 Att.+PAB 几乎在各项指标上都取得了最好结果，作者认为这个结果可能是因为PAB模型可以更为直接地影响解码过程。</p>
+<h1 id=""><a href="#" class="headerlink" title=" "></a> </h1>
       
     </div>
 
@@ -499,9 +553,17 @@ H(p, q) &= {\sum}_{i=1}^n p(x_i) \log (\frac{1}{q(x_i)})\\
       
         <div class="post-tags">
           
+            <a href="/tags/NLP/" rel="tag"># NLP</a>
+          
             <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
           
-            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+            <a href="/tags/NLG/" rel="tag"># NLG</a>
+          
+            <a href="/tags/dialogue-system/" rel="tag"># dialogue system</a>
+          
+            <a href="/tags/common-sense/" rel="tag"># common sense</a>
+          
+            <a href="/tags/papers/" rel="tag"># papers</a>
           
         </div>
       
@@ -514,8 +576,8 @@ H(p, q) &= {\sum}_{i=1}^n p(x_i) \log (\frac{1}{q(x_i)})\\
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/06/allennlp-tokenizers/" rel="next" title="AllenNLP源码解读 data.tokenizers">
-                <i class="fa fa-chevron-left"></i> AllenNLP源码解读 data.tokenizers
+              <a href="/2019/03/21/cross-entropy/" rel="next" title="关于交叉熵的一些理解">
+                <i class="fa fa-chevron-left"></i> 关于交叉熵的一些理解
               </a>
             
           </div>
@@ -523,10 +585,6 @@ H(p, q) &= {\sum}_{i=1}^n p(x_i) \log (\frac{1}{q(x_i)})\\
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/04/cciip-week1/" rel="prev" title="cciip week1 论文阅读">
-                cciip week1 论文阅读 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -684,7 +742,7 @@ H(p, q) &= {\sum}_{i=1}^n p(x_i) \log (\frac{1}{q(x_i)})\\
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-信息量"><span class="nav-number">1.</span> <span class="nav-text">1.信息量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-信息熵"><span class="nav-number">2.</span> <span class="nav-text">2.信息熵</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-KL散度（相对熵）"><span class="nav-number">3.</span> <span class="nav-text">3. KL散度（相对熵）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-交叉熵"><span class="nav-number">4.</span> <span class="nav-text">4. 交叉熵</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Personalized-Dialogue-Generation-with-Diversified-Traits"><span class="nav-number">1.</span> <span class="nav-text">Personalized Dialogue Generation with Diversified Traits</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#"><span class="nav-number">2.</span> <span class="nav-text"> </span></a></li></ol></div>
             
 
           </div>
