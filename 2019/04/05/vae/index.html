@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext">
+  
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="从PCA说起主成分分析，或者称为PCA，是一种广泛使用的用来降低维度、抽取特征的技术。降维可以分为线性降维和非线性降维，PCA就是一种线性降维的方法，通过对原始特征做线性变换（由于加了偏置项 $b$ 其实是仿射变换），将数据投影到一个低维空间。那么应该做怎样的线性变换，投影到一个怎样的低维空间呢？PCA希望投影后的样本具有 1.最近重构性：用样本经过投影变换后得到的新坐标来重构原始坐标，应该有最小">
+<meta name="keywords" content="deep learning,machine learning">
+<meta property="og:type" content="article">
+<meta property="og:title" content="变分自编码器漫谈">
+<meta property="og:url" content="http://yoursite.com/2019/04/05/vae/index.html">
+<meta property="og:site_name" content="Platoneko&#39;s Notes">
+<meta property="og:description" content="从PCA说起主成分分析，或者称为PCA，是一种广泛使用的用来降低维度、抽取特征的技术。降维可以分为线性降维和非线性降维，PCA就是一种线性降维的方法，通过对原始特征做线性变换（由于加了偏置项 $b$ 其实是仿射变换），将数据投影到一个低维空间。那么应该做怎样的线性变换，投影到一个怎样的低维空间呢？PCA希望投影后的样本具有 1.最近重构性：用样本经过投影变换后得到的新坐标来重构原始坐标，应该有最小">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-06T13:57:06.064Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="变分自编码器漫谈">
+<meta name="twitter:description" content="从PCA说起主成分分析，或者称为PCA，是一种广泛使用的用来降低维度、抽取特征的技术。降维可以分为线性降维和非线性降维，PCA就是一种线性降维的方法，通过对原始特征做线性变换（由于加了偏置项 $b$ 其实是仿射变换），将数据投影到一个低维空间。那么应该做怎样的线性变换，投影到一个怎样的低维空间呢？PCA希望投影后的样本具有 1.最近重构性：用样本经过投影变换后得到的新坐标来重构原始坐标，应该有最小">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/05/vae/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>变分自编码器漫谈 | Platoneko's Notes</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Platoneko's Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">A platonic fantast learning AI</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-首页">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-标签">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-分类">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-归档">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/05/vae/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="platoneko">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Platoneko's Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">变分自编码器漫谈
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-04-05 14:51:57" itemprop="dateCreated datePublished" datetime="2019-04-05T14:51:57+08:00">2019-04-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-04-06 21:57:06" itemprop="dateModified" datetime="2019-04-06T21:57:06+08:00">2019-04-06</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/deep-learning/" itemprop="url" rel="index"><span itemprop="name">deep learning</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="从PCA说起"><a href="#从PCA说起" class="headerlink" title="从PCA说起"></a>从PCA说起</h1><p>主成分分析，或者称为PCA，是一种广泛使用的用来降低维度、抽取特征的技术。降维可以分为线性降维和非线性降维，PCA就是一种线性降维的方法，通过对原始特征做线性变换（由于加了偏置项 $b$ 其实是仿射变换），将数据投影到一个低维空间。那么应该做怎样的线性变换，投影到一个怎样的低维空间呢？PCA希望投影后的样本具有 <strong>1.最近重构性：用样本经过投影变换后得到的新坐标来重构原始坐标，应该有最小的平方误差；2.最大可分性：投影后的样本点在新空间中应该尽可能分开，即使投影后的样本点的方差最大化。</strong> 有趣的是，基于最近重构性和最大可分性推导，能分别得到同一组线性变换参数：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+&\min_W -tr(W^T X X^T W)\\
+&s.t. \, W^T W = I
+\end{aligned}</script><p>$W$ 就是我们要求的线性变换，对输入样本 $x$ 进行降维即求 $z = W^T x$，$z$ 为中间隐变量，从 $z$ 重构 $x$ 即求 $\hat{x} = W z = W W^T x$ 。</p>
+<h1 id="非生成式模型-gt-生成式模型"><a href="#非生成式模型-gt-生成式模型" class="headerlink" title="非生成式模型 -&gt; 生成式模型"></a>非生成式模型 -&gt; 生成式模型</h1><p>前面介绍的PCA的形式是基于将数据线性投影到低维空间内。我们可以很容易地通过PCA计算输入数据 $x$ 在低维空间的表示 $z$ ，在实际应用中我们也更关注的是PCA的降维过程（编码），而不是重构过程（解码）。毕竟PCA的解码过程只能从已有的样本 $x$ 的隐变量 $z$ 去重构回 $x$ 自己，这根本就不具备生成功能，而我们现在想要一个能够生成新样本的模型。</p>
+<p>那么PCA能用来生成新样本吗？答案是可以的，PCA具备这样的潜能，但是需要从另一种概率角度来推导和理解PCA，才能把PCA纳入生成式模型。这种生成式的PCA被称作概率PCA。</p>
+<p>原始的PCA直接利用数据集 $X$ 的结构信息建模一个最优化问题，然后求解这个问题得到每个 $x_i$ 对应的 $z_i$ 。而概率PCA认为，数据集 $X$ 是对随机变量 $x$ 的若干次采样得到的，$x$ 依赖于随机变量 $z$ 。</p>
+<p>概率PCA定义隐变量 $z$ 的先验概率分布为标准高斯分布：</p>
+<script type="math/tex; mode=display">
+z \sim p(z) = \mathcal{N} (z;0, I)</script><p>接着定义观测变量 $x$ 的高斯条件概率分布 $p(x \mid z)$ 。因为PCA中 $x$ 与 $z$ 的线性关系 $x = Wz + \mu$，观测变量 $x$ 的条件概率分布还是高斯分布：</p>
+<script type="math/tex; mode=display">
+p(x \mid z) = \mathcal{N} (x; Wz + \mu, \sigma^2 I)</script><p>有了上面两式，我们就可以首先为隐变量从标准高斯分布采样一个值 $z$，然后以这个隐变量为条件，对观测变量 $x$ 进行采样来生成新样本：</p>
+<script type="math/tex; mode=display">
+x = Wz + \mu + \epsilon \, ,\epsilon \sim \mathcal{N} (0, \sigma^2 I)</script><p>那么现在的问题就是，如何确定参数 $W$, $\mu$, $\sigma$ 。我们可以使用极大似然的方式来确定参数，为了写出似然函数的表达式，我们需要观测变量的边缘概率分布的表达式：</p>
+<script type="math/tex; mode=display">
+p(x) = \int p(x \mid z) p(z)dz</script><p>由于这对应于一个线性高斯模型，因此边缘分布还是高斯分布：</p>
+<script type="math/tex; mode=display">
+\mathbb{E}[x] = \mathbb{E}[Wz + \mu + \epsilon] = \mu</script><script type="math/tex; mode=display">
+\begin{aligned}
+cov[x] &= \mathbb{E}[(Wz + \epsilon) (Wz + \epsilon)^T]\\
+&= \mathbb{E}[Wz z^T W^T] + \mathbb{E}[\epsilon \epsilon^T]\\
+&= WW^T + \sigma^2 I
+\end{aligned}</script><script type="math/tex; mode=display">
+p(x) = \mathcal{N}(x;\mu,WW^T + \sigma^2 I)</script><p>之后就可以通过最大化对数似然来确定模型的参数了。</p>
+<h1 id="线性模型-gt-非线性模型"><a href="#线性模型-gt-非线性模型" class="headerlink" title="线性模型 -&gt; 非线性模型"></a>线性模型 -&gt; 非线性模型</h1><p>前面的PCA以及概率PCA都是一种线性模型，它假设隐变量 $z$ 是观测变量 $x$ 的线性投影，这样的假设必然有它的局限性。而自编码器AutoEncoders则是一种非线性的降维模型。AutoEncoders的非线性在于，它在编码（降维）和解码（重构）的过程，都是用多层感知机，利用堆叠非线性激活函数来近似拟合任何函数。AutoEncoders是一种特殊的神经网络，他的输入和输出相同，训练目标是最小化重构的平方误差。可以说自编码器就是PCA的非线性版本，因此原始的自编码器也不具备生成式模型的功能。</p>
+<p>从之前的PCA到概率PCA，我们发现一个降维模型要升级到生成式模型，必须要有一个隐变量 $z$ 的先验分布，生成时要先对 $z$ 进行采样才能对新的样本 $x$ 进行重构。那我们再次将贝叶斯学派的概率图模型引入自编码器，于是就有了具备生成新样本能力的变分自编码器VAE了。</p>
+<p>将概率模型引入自编码器，和前面的概率PCA一样，我们想要最大化边缘概率分布 $p_\theta (x) = \int p_\theta (z) p_\theta (x \mid z)dz$ 。但是和前面的概率PCA不同，我们这里的 $p(x \mid z)$ 是通过神经网络拟合的复杂非线性函数，这就使得上面的积分式不再可积，也无法通过微分方法优化参数。而且后验分布 $p_\theta (z \mid x) = \frac{p_\theta (x \mid z) p_\theta (z)}{p_\theta (x)}$ 因为分母不可积，也无法使用EM算法来优化参数。于是VAE的作者引入了变分推断：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\log p_\theta(x) =& \log p_\theta(x, z) - \log p_\theta(z \mid x)\\
+=& \log \frac{p_\theta(x, z)}{q_\phi (z \mid x)} - \log \frac{p_\theta(z \mid x)}{q_\phi  (z \mid x)}\\
+=& \log p_\theta(x, z) - \log q_\phi (z \mid x) + \log \frac{q_\phi  (z \mid x)}{p_\theta(z \mid x)}\\
+\end{aligned}</script><p>等式两边同时对 $q_\phi (z \mid x)$ 求期望：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\int q_\phi (z \mid x) \log p_\theta(x)dz =& \int q_\phi (z \mid x) \log p_\theta(x, z)dz - \int q_\phi (z \mid x) \log q_\phi (z \mid x)dz\\ &+ \int q_\phi (z \mid x) \log \frac{q_\phi  (z \mid x)}{p_\theta(z \mid x)}dz\\
+\log p_\theta(x) \int q_\phi (z \mid x) dz =& \mathbb{E}_{ {q_\phi} (z \mid x)}[\log p_\theta (x,z) - \log q_\phi (z \mid x)] + KL(q_\phi (z \mid x) \| p_\theta (z \mid x))\\
+\log p_\theta (x) =& KL(q_\phi (z \mid x) \| p_\theta (z \mid x)) + \mathcal{L}(\theta , \phi;x)
+\end{aligned}</script><p>由于KL散度的非负性，我们可以通过优化上式第二项变分下界来优化参数:</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\log p_\theta (x) \ge \mathcal{L}(\theta , \phi;x) &= \mathbb{E}_{ {q_\phi} (z \mid x)}[-\log q_\phi (z \mid x) + \log p_\theta (x,z)]\\
+&= -KL(q_\phi (z \mid x) \| p_\theta (z)) + \mathbb{E}_{ {q_\phi} (z \mid x)} [\log p_\theta (x\mid z)]
+\end{aligned}</script><p>可见VAE并没有使用 $p(z)$ 是高斯分布的假设，而是假设后验分布 $p(z \mid x)$ 是高斯分布。具体来说，在训练过程中，给定真实一个样本 $x$ ，我们假设存在一个专属于 $x$ 的分布 $p(z \mid x)$ ，并假设这个分布是高斯分布。直观来看，因为我们后面要训练一个生成器 $X = g(Z)$，希望能够把从“专属”分布 $p(z \mid x_k)$ 中采样出一个 $z_k$ 还原为 $x_k$。如果训练中，直接假设 $p(z)$ 是高斯分布并从中采样一个 $z$ ，我们就无法确定这个 $z$ 对应于哪个真实的 $x$。</p>
+<p>那如何找到后验分布 $p(z \mid x)$ 呢？神经网络时代的哲学：遇事不决，神经网络！我们直接通过两个MLP把 $p(z \mid x)$ 的均值和方差拟合出来，拟合成一个近似结果 $q_\phi (z \mid x)$ 。这个步骤其实也没那么粗暴，只不过是深度学习的基本操作，这不就是我们常用的自编码器的编码部分吗？</p>
+<p>有了这些，我们现在可以来关注一下目标函数的优化：</p>
+<script type="math/tex; mode=display">
+\mathcal{L}(\theta , \phi;x) = -KL(q_\phi (z \mid x) \| p_\theta (z)) + \mathbb{E}_{ {q_\phi} (z \mid x)} [\log p_\theta (x\mid z)]</script><p>第一项是个KL散度。因为这是个生成式模型，我们用它生成的时候要先从一个先验分布 $p(z)$ 中采样出一个 $z$ 再输入解码器中来还原出 $x$ 来。这里干脆就定义这个先验分布为标准高斯分布。那么KL散度的计算结果就是：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+KL(q_\phi  (z \mid x) \| p_\theta (z)) &= KL(\mathcal{N}(\mu, \sigma^2 I) \| \mathcal{N}(0, I))\\
+&= \frac{1}{2} \sum_{i=1}^d (\mu_{(i)}^2 + \sigma_{(i)}^2 - \log \sigma_{(i)}^2 - 1)
+\end{aligned}</script><p>由于考虑的是各分量独立多元高斯分布，因此只需要推导一元高斯分布的情形即可：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}&KL(N(\mu,\sigma^2)\Vert N(0,1))\\
+=&\int \frac{1}{\sqrt{2\pi\sigma^2}}e^{-(x-\mu)^2/2\sigma^2} (\log \frac{e^{-(x-\mu)^2/2\sigma^2}/\sqrt{2\pi\sigma^2}}{e^{-x^2/2}/\sqrt{2\pi}})dx\\
+=&\int \frac{1}{\sqrt{2\pi\sigma^2}}e^{-(x-\mu)^2/2\sigma^2} \log \{\frac{1}{\sqrt{\sigma^2}}\exp\{\frac{1}{2}[x^2-(x-\mu)^2/\sigma^2]\} \}dx\\
+=&\frac{1}{2}\int \frac{1}{\sqrt{2\pi\sigma^2}}e^{-(x-\mu)^2/2\sigma^2} [-\log \sigma^2+x^2-(x-\mu)^2/\sigma^2] dx\end{aligned}</script><p>第一项是 $-log \sigma^2$ 乘以概率密度的积分（相当于乘1），第二项是高斯分布二阶矩 $\mu^2 + \sigma^2$，第三项是”-方差/方差”结果就是-1。</p>
+<p>接下来就是目标函数的第二项，第二项对应于解码重构的过程。$\mathbb{E}_{ {q_\phi} (z \mid x)} [\log p_\theta (x\mid z)]$ 就等价于 $\frac{1}{n} \sum^N_i \log p_\theta (x\mid z_i) \,\, , z_i \sim {q_\phi} (z \mid x)$，我们只需从编码过程计算出的后验高斯分布中采样出一个 $z$ ，然后去计算 $\log p_\theta (x\mid z)$ 即可。但是这里看上去好像有点问题：采样一个够吗？中山大学苏神：“事实上我们会运行多个epoch，每次的隐变量都是随机生成的，因此当epoch数足够多时，事实上是可以保证采样的充分性的。我也实验过采样多个的情形，感觉生成的样本并没有明显变化。”那就这样吧。</p>
+<p>那生成模型中的条件分布 $p_\theta (x\mid z)$ 是啥呢？论文中给出了两种分布：伯努利分布（用于二值的 $x$）和高斯分布（用于连续实数的 $x$）。</p>
+<p>伯努利分布模型：</p>
+<script type="math/tex; mode=display">
+q(x|z)=\prod_{k=1}^D (\rho_{(k)}(z))^{x_{(k)}} (1 - \rho_{(k)}(z))^{1 - x_{(k)}}</script><script type="math/tex; mode=display">
+-\ln q(x|z) = \sum_{k=1}^D [- x_{(k)} \ln \rho_{(k)}(z) - (1-x_{(k)}) \ln (1 -\rho_{(k)}(z))]</script><p>高斯分布模型：</p>
+<script type="math/tex; mode=display">
+q(x|z)=\frac{1}{\prod\limits_{k=1}^D \sqrt{2\pi  \sigma_{(k)}^2(z)}}\exp(-\frac{1}{2}\Vert\frac{x-\mu(z)}{\sigma(z)}\Vert^2)</script><script type="math/tex; mode=display">
+-\ln q(x|z) = \frac{1}{2}\Vert\frac{x-\mu(z)}{\sigma(z)}\Vert^2 + \frac{D}{2}\ln 2\pi + \frac{1}{2}\sum_{k=1}^D \ln \sigma_{(k)}^2(z)</script><p>但是我们重构 $x$ 时并不会真的从这个高斯分布中采样，而是直接以高斯分布概率密度最大点（即均值）作为重构结果，因此我们用不上方差 $\sigma^2$。因为如果是采样出 $x$，那模型就无法通过微分方法（梯度下降）优化参数了。这时候：</p>
+<script type="math/tex; mode=display">
+-\ln q(x|z) \sim \frac{1}{2\sigma^2}\Vert x-\mu(z)\Vert^2</script><p>可以发现，其形式就是一个MSE损失。</p>
+<p>可是现在还有一个问题：如果 $z$ 是通过预测后验分布 $q_\phi (z \mid x)$ 采样取得，采样过程是不可微的，那我们要怎样才能优化编码器部分的参数呢？这里，VAE使用了一个重参数技巧：从 $\mathcal{N}(\mu, \sigma^2)$ 中采样一个 $z$ 可以等价于从 $\mathcal{N}(0,I)$ 中采样一个 $\varepsilon$ 使 $z = \mu + \varepsilon \times \sigma$ 。这样一来，“采样”这个操作就不用参与梯度下降了，改为采样的结果参与，使得整个模型可训练了。整个VAE框架的流程就完成了。</p>
+<h1 id="如果直面联合分布？"><a href="#如果直面联合分布？" class="headerlink" title="如果直面联合分布？"></a>如果直面联合分布？</h1><p>考虑从另一角度推导VAE的目标函数：干脆直接来对 $p(x,z)$ 做近似。定义 $p(x,z)=\tilde{p}(x)p(z|x)$，设想用联合分布 $q(x,z)$ 来近似 $p(x,z)$：</p>
+<script type="math/tex; mode=display">
+KL(p(x,z)\Vert q(x,z)) = \iint p(x,z)\ln \frac{p(x,z)}{q(x,z)} dzdx</script><script type="math/tex; mode=display">
+\begin{aligned}KL(p(x,z)\Vert q(x,z)) =& \int \tilde{p}(x) [\int p(z|x)\ln \frac{\tilde{p}(x)p(z|x)}{q(x,z)} dz]dx\\ 
+=& \mathbb{E}_{x\sim \tilde{p}(x)} [\int p(z|x)\ln \frac{\tilde{p}(x)p(z|x)}{q(x,z)} dz] 
+\end{aligned}</script><script type="math/tex; mode=display">
+\ln \frac{\tilde{p}(x)p(z|x)}{q(x,z)}=\ln \tilde{p}(x) + \ln \frac{p(z|x)}{q(x,z)}</script><script type="math/tex; mode=display">
+\begin{aligned}\mathbb{E}_{x\sim \tilde{p}(x)} [\int p(z|x)\ln \tilde{p}(x)dz] =& \mathbb{E}_{x\sim \tilde{p}(x)} [\ln \tilde{p}(x)\int p(z|x)dz]\\ 
+=&\mathbb{E}_{x\sim \tilde{p}(x)} [\ln \tilde{p}(x)] 
+\end{aligned}</script><p>注意到 $\mathbb{E}_{x\sim \tilde{p}(x)} [\ln \tilde{p}(x)]$ 是一个常数项，因此目标函数可以简化为：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}\mathcal{L} =& \mathbb{E}_{x\sim \tilde{p}(x)} [\int p(z|x)\ln \frac{p(z|x)}{q(x,z)} dz]\\
+=& \mathbb{E}_{x\sim \tilde{p}(x)} [\int p(z|x)\ln \frac{p(z|x)}{q(x|z)q(z)} dz]\\ 
+=&\mathbb{E}_{x\sim \tilde{p}(x)} [-\int p(z|x)\ln q(x|z)dz+\int p(z|x)\ln \frac{p(z|x)}{q(z)}dz]\end{aligned}</script><p>最终形式：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}\mathcal{L} = &\mathbb{E}_{x\sim \tilde{p}(x)} [\mathbb{E}_{z\sim p(z|x)}[-\ln q(x|z)]+\mathbb{E}_{z\sim p(z|x)}[\ln \frac{p(z|x)}{q(z)}]]\\
+= &\mathbb{E}_{x\sim \tilde{p}(x)} [\mathbb{E}_{z\sim p(z|x)}[-\ln q(x|z)]+KL(p(z|x)\Vert q(z))]
+\end{aligned}</script><p>这正是VAE的损失函数，我们直面联合分布，中间没有对后验分布进行分析，居然直接就得到了这个结果。</p>
+<h1 id="VAE损失函数的直观理解"><a href="#VAE损失函数的直观理解" class="headerlink" title="VAE损失函数的直观理解"></a>VAE损失函数的直观理解</h1><p>损失函数中，最为直观的就是重构损失，它要求重构后的 $X$ 和原始的 $X$ 尽可能接近。如果仅仅只有重构损失，那么VAE就算前面做了再多努力，又是拟合均值方差又是后验采样，其最终还是会退化成一个普通的自编码器，失去了生成的功能。虽然 $z$ 是通过采样得到的，采样就会有噪声，显然噪声会增加重构的难度，不过好在这个噪声强度（也就是方差）通过一个神经网络算出来的，所以最终模型为了重构得更好，肯定会想尽办法让方差为0。而方差为0的话，也就没有随机性了，所以不管怎么采样其实都只是得到确定的结果（也就是均值）。这时，KL散度的作用就显现了，它要求所有的 $p(X \mid Z)$ 都要向标准高斯分布靠拢，这样就防止了噪声为0，同时保证了生成过程能放心地从标准高斯分布中采样一个 $z$ 来产生新样本：</p>
+<script type="math/tex; mode=display">
+p(Z)=\sum_X p(Z|X)p(X)=\sum_X \mathcal{N}(0,I)p(X)=\mathcal{N}(0,I) \sum_X p(X) = \mathcal{N}(0,I)</script><p>而且，KL损失和重构损失还存在对抗关系。直觉上来想，当decoder还没有训练好时（重构误差远大于KL loss），就会适当降低噪声（KL loss增加），使得拟合起来容易一些（重构误差开始下降）；反之，如果decoder训练得还不错时（重构误差小于KL loss），这时候噪声就会增加（KL loss减少），使得拟合更加困难了（重构误差又开始增加），这时候decoder就要想办法提高它的生成能力了。（浑然天成！）</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/04/cciip-week1/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">platoneko</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#从PCA说起"><span class="nav-number">1.</span> <span class="nav-text">从PCA说起</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#非生成式模型-gt-生成式模型"><span class="nav-number">2.</span> <span class="nav-text">非生成式模型 -&gt; 生成式模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线性模型-gt-非线性模型"><span class="nav-number">3.</span> <span class="nav-text">线性模型 -&gt; 非线性模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如果直面联合分布？"><span class="nav-number">4.</span> <span class="nav-text">如果直面联合分布？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#VAE损失函数的直观理解"><span class="nav-number">5.</span> <span class="nav-text">VAE损失函数的直观理解</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">platoneko</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.min.js"></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.ui.min.js"></script>
+
+  
+  <script src="/lib/three/three.min.js"></script>
+
+  
+  <script src="/lib/three/three-waves.min.js"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+      for (i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+<style>
+.MathJax_Display {
+  overflow: auto hidden;
+}
+</style><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
