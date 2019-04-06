@@ -130,7 +130,7 @@
 <meta property="og:site_name" content="Platoneko&#39;s Notes">
 <meta property="og:description" content="接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（以下论述主要是一些通俗理解，追求数学严谨的同学请移步） 交叉熵是信息论中的一个概念，要想了解交叉熵">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-06T13:41:27.411Z">
+<meta property="og:updated_time" content="2019-04-06T13:59:27.758Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于交叉熵的一些理解">
 <meta name="twitter:description" content="接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（以下论述主要是一些通俗理解，追求数学严谨的同学请移步） 交叉熵是信息论中的一个概念，要想了解交叉熵">
@@ -413,7 +413,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-06 21:41:27" itemprop="dateModified" datetime="2019-04-06T21:41:27+08:00">2019-04-06</time>
+                <time title="Modified: 2019-04-06 21:59:27" itemprop="dateModified" datetime="2019-04-06T21:59:27+08:00">2019-04-06</time>
               
             
           </span>
@@ -476,6 +476,7 @@
 <p>交叉熵是信息论中的一个概念，要想了解交叉熵的本质，就需要从最基本的概念说起。</p>
 <h1 id="1-信息量"><a href="#1-信息量" class="headerlink" title="1.信息量"></a>1.信息量</h1><p>假设 $X$ 是一个离散型随机变量，其取值集合为 $\chi$，概率分布函数 $p(x)=P(X=x), x \in \chi$，则定义事件 $X=x_0$ 的信息量为：</p>
 <script type="math/tex; mode=display">I(x_0)=- \log (p(x_0))</script><p>直观来看，信息量和事件发生的概率有关，越不可能发生的事件发生了，我们获取到的信息量就越大，而那些司空见惯的事发生了，我们获取到的信息量就很少，<strong>即信息量可以表示一个事件的自信息量</strong>。从另一角度看，信息量也可以衡量一个事件的不确定度，也就是说我们需要加入多少信息才能将该事件的发生确定下来，<strong>事件的不确定性越大，信息量也就越大，把它搞清楚所需要的信息量也就越大</strong>。</p>
+<a id="more"></a>
 <h1 id="2-信息熵"><a href="#2-信息熵" class="headerlink" title="2.信息熵"></a>2.信息熵</h1><p>信息熵是随机变量的信息量的期望：</p>
 <script type="math/tex; mode=display">H(X) = - {\sum}_{i=1}^n p(x_i) \log (p(x_i))</script><p>广义的熵可以衡量一个系统的有序化程度（或混乱程度），可以证明，一个系统越是混乱不确定（均匀分布），熵就越大。信息熵用于衡量数据的信息量时，可以得到对数据进行编码所需的最短平均编码长度，当平均编码长度大于信息熵时可以认为编码存在冗余。</p>
 <h1 id="3-KL散度（相对熵）"><a href="#3-KL散度（相对熵）" class="headerlink" title="3. KL散度（相对熵）"></a>3. KL散度（相对熵）</h1><p>如果我们对于同一个随机变量 $X$ 有两个单独的概率分布 $P(X)$ 和 $Q(X)$，我们可以使用KL散度来衡量这两个分布的差异（<strong>不是距离，因为不具备对称性！</strong>）</p>

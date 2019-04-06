@@ -130,7 +130,7 @@
 <meta property="og:site_name" content="Platoneko&#39;s Notes">
 <meta property="og:description" content="从PCA说起主成分分析，或者称为PCA，是一种广泛使用的用来降低维度、抽取特征的技术。降维可以分为线性降维和非线性降维，PCA就是一种线性降维的方法，通过对原始特征做线性变换（由于加了偏置项 $b$ 其实是仿射变换），将数据投影到一个低维空间。那么应该做怎样的线性变换，投影到一个怎样的低维空间呢？PCA希望投影后的样本具有 1.最近重构性：用样本经过投影变换后得到的新坐标来重构原始坐标，应该有最小">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-06T13:57:06.064Z">
+<meta property="og:updated_time" content="2019-04-06T13:59:13.551Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="变分自编码器漫谈">
 <meta name="twitter:description" content="从PCA说起主成分分析，或者称为PCA，是一种广泛使用的用来降低维度、抽取特征的技术。降维可以分为线性降维和非线性降维，PCA就是一种线性降维的方法，通过对原始特征做线性变换（由于加了偏置项 $b$ 其实是仿射变换），将数据投影到一个低维空间。那么应该做怎样的线性变换，投影到一个怎样的低维空间呢？PCA希望投影后的样本具有 1.最近重构性：用样本经过投影变换后得到的新坐标来重构原始坐标，应该有最小">
@@ -413,7 +413,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-06 21:57:06" itemprop="dateModified" datetime="2019-04-06T21:57:06+08:00">2019-04-06</time>
+                <time title="Modified: 2019-04-06 21:59:13" itemprop="dateModified" datetime="2019-04-06T21:59:13+08:00">2019-04-06</time>
               
             
           </span>
@@ -478,6 +478,7 @@
 &\min_W -tr(W^T X X^T W)\\
 &s.t. \, W^T W = I
 \end{aligned}</script><p>$W$ 就是我们要求的线性变换，对输入样本 $x$ 进行降维即求 $z = W^T x$，$z$ 为中间隐变量，从 $z$ 重构 $x$ 即求 $\hat{x} = W z = W W^T x$ 。</p>
+<a id="more"></a>
 <h1 id="非生成式模型-gt-生成式模型"><a href="#非生成式模型-gt-生成式模型" class="headerlink" title="非生成式模型 -&gt; 生成式模型"></a>非生成式模型 -&gt; 生成式模型</h1><p>前面介绍的PCA的形式是基于将数据线性投影到低维空间内。我们可以很容易地通过PCA计算输入数据 $x$ 在低维空间的表示 $z$ ，在实际应用中我们也更关注的是PCA的降维过程（编码），而不是重构过程（解码）。毕竟PCA的解码过程只能从已有的样本 $x$ 的隐变量 $z$ 去重构回 $x$ 自己，这根本就不具备生成功能，而我们现在想要一个能够生成新样本的模型。</p>
 <p>那么PCA能用来生成新样本吗？答案是可以的，PCA具备这样的潜能，但是需要从另一种概率角度来推导和理解PCA，才能把PCA纳入生成式模型。这种生成式的PCA被称作概率PCA。</p>
 <p>原始的PCA直接利用数据集 $X$ 的结构信息建模一个最优化问题，然后求解这个问题得到每个 $x_i$ 对应的 $z_i$ 。而概率PCA认为，数据集 $X$ 是对随机变量 $x$ 的若干次采样得到的，$x$ 依赖于随机变量 $z$ 。</p>

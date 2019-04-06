@@ -411,7 +411,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-06 21:57:06" itemprop="dateModified" datetime="2019-04-06T21:57:06+08:00">2019-04-06</time>
+                <time title="Modified: 2019-04-06 21:59:13" itemprop="dateModified" datetime="2019-04-06T21:59:13+08:00">2019-04-06</time>
               
             
           </span>
@@ -464,11 +464,12 @@
 
       
         
-          
-            <p>
-              从PCA说起主成分分析，或者称为PCA，是一种广泛使用的用来降低维度、抽取特征的技术。降维可以分为线性降维和非线性降维，PCA就是一种线性降维的方法，通过对原始特征做线性变换（由于加了偏置项 $b$ 其实是仿射变换），将数据投影到一个低维空间。那么应该做怎样的线性变换，投影到一个怎样的低维空间呢？P
-              ...
-            </p>
+          <h1 id="从PCA说起"><a href="#从PCA说起" class="headerlink" title="从PCA说起"></a>从PCA说起</h1><p>主成分分析，或者称为PCA，是一种广泛使用的用来降低维度、抽取特征的技术。降维可以分为线性降维和非线性降维，PCA就是一种线性降维的方法，通过对原始特征做线性变换（由于加了偏置项 $b$ 其实是仿射变换），将数据投影到一个低维空间。那么应该做怎样的线性变换，投影到一个怎样的低维空间呢？PCA希望投影后的样本具有 <strong>1.最近重构性：用样本经过投影变换后得到的新坐标来重构原始坐标，应该有最小的平方误差；2.最大可分性：投影后的样本点在新空间中应该尽可能分开，即使投影后的样本点的方差最大化。</strong> 有趣的是，基于最近重构性和最大可分性推导，能分别得到同一组线性变换参数：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+&\min_W -tr(W^T X X^T W)\\
+&s.t. \, W^T W = I
+\end{aligned}</script><p>$W$ 就是我们要求的线性变换，对输入样本 $x$ 进行降维即求 $z = W^T x$，$z$ 为中间隐变量，从 $z$ 重构 $x$ 即求 $\hat{x} = W z = W W^T x$ 。</p>
           <!--noindex-->
           
             <div class="post-button text-center">
@@ -594,7 +595,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-06 09:48:25" itemprop="dateModified" datetime="2019-04-06T09:48:25+08:00">2019-04-06</time>
+                <time title="Modified: 2019-04-06 21:59:41" itemprop="dateModified" datetime="2019-04-06T21:59:41+08:00">2019-04-06</time>
               
             
           </span>
@@ -629,15 +630,11 @@
 
       
         
-          
-            <p>
-              Personalized Dialogue Generation with Diversified Traitshttps://arxiv.org/pdf/1901.09672.pdf
-
-Contributions
-
-针对如何将personality traits融入生成式对话系统，论文中给出的模型
-              ...
-            </p>
+          <h1 id="Personalized-Dialogue-Generation-with-Diversified-Traits"><a href="#Personalized-Dialogue-Generation-with-Diversified-Traits" class="headerlink" title="Personalized Dialogue Generation with Diversified Traits"></a><strong>Personalized Dialogue Generation with Diversified Traits</strong></h1><p><a href="https://arxiv.org/pdf/1901.09672.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1901.09672.pdf</a></p>
+<blockquote>
+<p><strong>Contributions</strong></p>
+</blockquote>
+<p>针对如何将personality traits融入生成式对话系统，论文中给出的模型还是比较简单的：沿用encoder-decoder框架，在decoder上尝试了一种基于注意力机制的 <em>persona-aware attention</em> 模型和另一种直接在输出预测词的时候加入 <em>persona-aware bias</em> 的模型。个人认为论文的最大贡献在于，为研究者构建了第一个包含真实对话数据和每个说话者的不同个性特征的大型数据集（个性化对话系统的一个主要问题就是缺少数据集）。</p>
           <!--noindex-->
           
             <div class="post-button text-center">
@@ -763,7 +760,7 @@ Contributions
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-06 21:41:27" itemprop="dateModified" datetime="2019-04-06T21:41:27+08:00">2019-04-06</time>
+                <time title="Modified: 2019-04-06 21:59:27" itemprop="dateModified" datetime="2019-04-06T21:59:27+08:00">2019-04-06</time>
               
             
           </span>
@@ -816,11 +813,10 @@ Contributions
 
       
         
-          
-            <p>
-              接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。
-              ...
-            </p>
+          <p>接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（<em>以下论述主要是一些通俗理解，追求数学严谨的同学请移步</em>）</p>
+<p>交叉熵是信息论中的一个概念，要想了解交叉熵的本质，就需要从最基本的概念说起。</p>
+<h1 id="1-信息量"><a href="#1-信息量" class="headerlink" title="1.信息量"></a>1.信息量</h1><p>假设 $X$ 是一个离散型随机变量，其取值集合为 $\chi$，概率分布函数 $p(x)=P(X=x), x \in \chi$，则定义事件 $X=x_0$ 的信息量为：</p>
+<script type="math/tex; mode=display">I(x_0)=- \log (p(x_0))</script><p>直观来看，信息量和事件发生的概率有关，越不可能发生的事件发生了，我们获取到的信息量就越大，而那些司空见惯的事发生了，我们获取到的信息量就很少，<strong>即信息量可以表示一个事件的自信息量</strong>。从另一角度看，信息量也可以衡量一个事件的不确定度，也就是说我们需要加入多少信息才能将该事件的发生确定下来，<strong>事件的不确定性越大，信息量也就越大，把它搞清楚所需要的信息量也就越大</strong>。</p>
           <!--noindex-->
           
             <div class="post-button text-center">
