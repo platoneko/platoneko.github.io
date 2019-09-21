@@ -1,482 +1,180 @@
 <!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-<html class="theme-next mist use-motion" lang="">
-<head><meta name="generator" content="Hexo 3.8.0">
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext">
-  
-
-
-
-
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
-
-<link rel="stylesheet" href="/css/main.css?v=6.7.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
-
-
-
-
-
-
-
-<script id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    version: '6.7.0',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: false,
-    fastclick: false,
-    lazyload: false,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-  
-
-
-
-
-  <meta name="description" content="接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（以下论述主要是一些通俗理解，追求数学严谨的同学请移步） 交叉熵是信息论中的一个概念，要想了解交叉熵">
-<meta name="keywords" content="deep learning,machine learning">
-<meta property="og:type" content="article">
-<meta property="og:title" content="关于交叉熵的一些理解">
-<meta property="og:url" content="http://yoursite.com/2019/03/21/cross-entropy/index.html">
-<meta property="og:site_name" content="Platoneko&#39;s Notes">
-<meta property="og:description" content="接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（以下论述主要是一些通俗理解，追求数学严谨的同学请移步） 交叉熵是信息论中的一个概念，要想了解交叉熵">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-06T13:59:27.758Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于交叉熵的一些理解">
-<meta name="twitter:description" content="接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（以下论述主要是一些通俗理解，追求数学严谨的同学请移步） 交叉熵是信息论中的一个概念，要想了解交叉熵">
-
-
-
-
-
-
-  <link rel="canonical" href="http://yoursite.com/2019/03/21/cross-entropy/">
-
-
-
-<script id="page.configurations">
-  CONFIG.page = {
-    sidebar: "",
-  };
-</script>
-
-  <title>关于交叉熵的一些理解 | Platoneko's Notes</title>
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  <noscript>
-  <style>
-  .use-motion .motion-element,
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-title { opacity: initial; }
-
-  .use-motion .logo,
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
-
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
+<html lang="en">
+
+
+
+
+
+
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="preconnect" href="//www.googletagmanager.com">
+	<link rel="preconnect" href="//zz.bdstatic.com">
+	<link rel="preconnect" href="//sp0.baidu.com">
+	<link rel="preconnect" href="//www.google-analytics.com">
+	<link rel="preconnect" href="//cdn1.lncld.net">
+	<link rel="preconnect" href="//unpkg.com">
+	<link rel="preconnect" href="//app-router.leancloud.cn">
+	<link rel="preconnect" href="//9qpuwspm.api.lncld.net">
+	<link rel="preconnect" href="//gravatar.loli.net">
+
+	<title>关于交叉熵的一些理解 | Platoneko's Notes</title>
+
+	<meta name="HandheldFriendly" content="True">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+	<meta name="generator" content="hexo">
+	<meta name="author" content="platoneko">
+	<meta name="description" content="">
+
+	
+	<meta name="keywords" content="">
+	
+
+	
+	<link rel="shortcut icon" href="/img/icon.jpg">
+	<link rel="apple-touch-icon" href="/img/icon.jpg">
+	
+
+	
+	<meta name="theme-color" content="#3c484e">
+	<meta name="msapplication-TileColor" content="#3c484e">
+	
+
+	
+
+	
+
+	
+	<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+	</script>
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Queue(function() {
+			var all = MathJax.Hub.getAllJax(), i;
+			for(i=0; i < all.length; i += 1) {
+				all[i].SourceElement().parentNode.className += ' has-jax';
+			}
+		});
+	</script>
+	<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	</script>
+        
+
+	<meta property="og:site_name" content="Platoneko's Notes">
+	<meta property="og:type" content="article">
+	<meta property="og:title" content="关于交叉熵的一些理解 | Platoneko's Notes">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="http://yoursite.com/2019/03/21/cross-entropy/">
+
+	
+	<meta property="article:published_time" content="2019-03-21T09:03:00+08:00"> 
+	<meta property="article:author" content="platoneko">
+	<meta property="article:published_first" content="Platoneko's Notes, /2019/03/21/cross-entropy/">
+	
+
+	
+	
+	<link rel="stylesheet" href="/css/allinonecss.min.css">
+
+	
+	
+	
 </head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+<body class="post-template">
+	<div class="site-wrapper">
+		
 
-  
-  
-    
-  
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
-    
 
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Platoneko's Notes</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+<header class="site-header post-site-header outer">
+    <div class="inner">
+        
+<nav class="site-nav"> 
+    <div class="site-nav-left">
+        <ul class="nav">
+            <li>
+                
+                
+                <a class="site-nav-logo" href="/" title="Platoneko's Notes">
+                    <img src="/img/icon.jpg" alt="Platoneko's Notes">
+                </a>
+                
+                
+            </li>
+            
+            
+            <li>
+                <a href="/about" title="ABOUT">ABOUT</a>
+            </li>
+            
+            <li>
+                <a href="/archives" title="ARCHIVES">ARCHIVES</a>
+            </li>
+            
+            
+        </ul> 
     </div>
     
-      
-        <p class="site-subtitle">A platonic fantast learning AI</p>
-      
+    <div class="search-button-area">
+        <a href="#search" class="search-button">Search ...</a>
+    </div>
+     
+    <div class="site-nav-right">
+        
+        <a href="#search" class="search-button">Search ...</a>
+         
+        
+<div class="social-links">
     
     
-  </div>
-
-  <div class="site-nav-toggle">
-    <button aria-label="Toggle navigation bar">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
+    <a class="social-link" title="github" href="https://github.com/platoneko" target="_blank" rel="noopener">
+        <svg viewbox="0 0 1049 1024" xmlns="http://www.w3.org/2000/svg"><path d="M524.979332 0C234.676191 0 0 234.676191 0 524.979332c0 232.068678 150.366597 428.501342 358.967656 498.035028 26.075132 5.215026 35.636014-11.299224 35.636014-25.205961 0-12.168395-0.869171-53.888607-0.869171-97.347161-146.020741 31.290159-176.441729-62.580318-176.441729-62.580318-23.467619-60.841976-58.234462-76.487055-58.234463-76.487055-47.804409-32.15933 3.476684-32.15933 3.476685-32.15933 53.019436 3.476684 80.83291 53.888607 80.83291 53.888607 46.935238 79.963739 122.553122 57.365291 152.97411 43.458554 4.345855-33.897672 18.252593-57.365291 33.028501-70.402857-116.468925-12.168395-239.022047-57.365291-239.022047-259.012982 0-57.365291 20.860106-104.300529 53.888607-140.805715-5.215026-13.037566-23.467619-66.926173 5.215027-139.067372 0 0 44.327725-13.906737 144.282399 53.888607 41.720212-11.299224 86.917108-17.383422 131.244833-17.383422s89.524621 6.084198 131.244833 17.383422C756.178839 203.386032 800.506564 217.29277 800.506564 217.29277c28.682646 72.1412 10.430053 126.029806 5.215026 139.067372 33.897672 36.505185 53.888607 83.440424 53.888607 140.805715 0 201.64769-122.553122 245.975415-239.891218 259.012982 19.121764 16.514251 35.636014 47.804409 35.636015 97.347161 0 70.402857-0.869171 126.898978-0.869172 144.282399 0 13.906737 9.560882 30.420988 35.636015 25.205961 208.601059-69.533686 358.967656-265.96635 358.967655-498.035028C1049.958663 234.676191 814.413301 0 524.979332 0z"/></svg>
+    </a>
+    
+    
+    
+    
+    
+    
 </div>
-
-
-
-<nav class="site-nav">
-  
-    <ul id="menu" class="menu">
-      
-        
-        
-        
-          
-          <li class="menu-item menu-item-首页">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
-
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-标签">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
-
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-分类">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
-
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-归档">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
-
-  </li>
-
-      
-      
-    </ul>
-  
-
-  
-    
-
-  
-
-  
+    </div>
 </nav>
+    </div>
+</header>
 
 
-
-  
-
-
-
-</div>
-    </header>
-
-    
-
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/21/cross-entropy/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="platoneko">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Platoneko's Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">关于交叉熵的一些理解
-
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
+<div id="site-main" class="site-main outer" role="main">
+    <div class="inner">
+        <header class="post-full-header">
+            <div class="post-full-meta">
+                <time class="post-full-meta-date" datetime="2019-03-21T01:07:36.000Z">
+                    2019-03-21
+                </time>
                 
-              
-
-              <time title="Created: 2019-03-21 09:07:36" itemprop="dateCreated datePublished" datetime="2019-03-21T09:07:36+08:00">2019-03-21</time>
-            
-
-            
-              
-
-              
+                <span class="date-divider">/</span>
                 
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-04-06 21:59:27" itemprop="dateModified" datetime="2019-04-06T21:59:27+08:00">2019-04-06</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/deep-learning/" itemprop="url" rel="index"><span itemprop="name">deep learning</span></a></span>
-
+                <a href="/categories/deep-learning/">deep learning</a>&nbsp;&nbsp;
                 
                 
-              
-            </span>
-          
-
-          
+            </div>
+            <h1 class="post-full-title">关于交叉熵的一些理解</h1>
+        </header>
+        <div class="post-full no-image">
             
-            
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="post-meta-item-icon">
-            <i class="fa fa-eye"></i>
-             Views:  
-            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
-            </span>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <p>接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（<em>以下论述主要是一些通俗理解，追求数学严谨的同学请移步</em>）</p>
+            <div class="post-full-content">
+                <article id="photoswipe" class="markdown-body">
+                    <p>接触机器学习和深度学习已经有一年多时间,曾经自以为已经对交叉熵的概念已经很熟悉了,日常涉猎的都是一些更高层面的针对特定问题的DL/ML算法。然而最近研究多轮对话接触到vhred以及其他变分模型的时候,才发现自己对交叉熵、KL散度的概念并不够清楚,甚至还存在一些误解。借此机会重新整理一下交叉熵的内容。（<em>以下论述主要是一些通俗理解，追求数学严谨的同学请移步</em>）</p>
 <p>交叉熵是信息论中的一个概念，要想了解交叉熵的本质，就需要从最基本的概念说起。</p>
 <h1 id="1-信息量"><a href="#1-信息量" class="headerlink" title="1.信息量"></a>1.信息量</h1><p>假设 $X$ 是一个离散型随机变量，其取值集合为 $\chi$，概率分布函数 $p(x)=P(X=x), x \in \chi$，则定义事件 $X=x_0$ 的信息量为：</p>
 <script type="math/tex; mode=display">I(x_0)=- \log (p(x_0))</script><p>直观来看，信息量和事件发生的概率有关，越不可能发生的事件发生了，我们获取到的信息量就越大，而那些司空见惯的事发生了，我们获取到的信息量就很少，<strong>即信息量可以表示一个事件的自信息量</strong>。从另一角度看，信息量也可以衡量一个事件的不确定度，也就是说我们需要加入多少信息才能将该事件的发生确定下来，<strong>事件的不确定性越大，信息量也就越大，把它搞清楚所需要的信息量也就越大</strong>。</p>
-<a id="more"></a>
 <h1 id="2-信息熵"><a href="#2-信息熵" class="headerlink" title="2.信息熵"></a>2.信息熵</h1><p>信息熵是随机变量的信息量的期望：</p>
 <script type="math/tex; mode=display">H(X) = - {\sum}_{i=1}^n p(x_i) \log (p(x_i))</script><p>广义的熵可以衡量一个系统的有序化程度（或混乱程度），可以证明，一个系统越是混乱不确定（均匀分布），熵就越大。信息熵用于衡量数据的信息量时，可以得到对数据进行编码所需的最短平均编码长度，当平均编码长度大于信息熵时可以认为编码存在冗余。</p>
 <h1 id="3-KL散度（相对熵）"><a href="#3-KL散度（相对熵）" class="headerlink" title="3. KL散度（相对熵）"></a>3. KL散度（相对熵）</h1><p>如果我们对于同一个随机变量 $X$ 有两个单独的概率分布 $P(X)$ 和 $Q(X)$，我们可以使用KL散度来衡量这两个分布的差异（<strong>不是距离，因为不具备对称性！</strong>）</p>
@@ -490,468 +188,327 @@ H(p, q) &= {\sum}_{i=1}^n p(x_i) \log (\frac{1}{q(x_i)})\\
 \end{aligned}</script><p>可以发现 $KL(p \mid \mid q) = H(p,q)-H(p)$，在机器学习中，我们需要评估<strong>某个样本</strong>的label和predicts之间的差距，使用KL散度刚刚好，由于KL散度中的 $H(p)$ 一直保持不变，故优化中只需要关注交叉熵即可。</p>
 <p>重点开始：深度学习/机器学习中大部分任务都可以看作分类任务，我们这里说的分布 $p$ 和 分布 $q$ 是针对对数据集中的<strong>某一个</strong>样本 $x$ 的label而言，而不是整个数据集中的所有样本的label分布。 我们的任务是训练一个函数，向函数中输入一个样本 $x$ 可以得到其label的<strong>概率分布列</strong> $\vec{P}(Y=y \mid x)$，训练的目标是对每个已观测到的样本 $(x,y)$，通过这个函数计算出的label分布列都要和观测的真实分布列尽可能接近。对于每个样本 $x$ 只有一种确定的label的情况（通常情况如此），其真实概率分布列 $p$ 其实是一个形如 $[0,1,0,0,0]$ 的向量，其信息熵 $H(p)$ 通过公式计算的结果为0（这也印证了对于已观测到的样本，其label的概率分布已知，不确定度为0），可以认为深度学习/机器学习中对常见分类任务使用的交叉熵其实就是”退化“的KL散度；由于样本真实概率分布 $p$ 为形如 $[0,1,0,0,0]$ 的向量，交叉熵 $H(p,q)$ 也只剩下真实概率分布中数值为1对应的项，此时交叉熵就完全等价于极大对数似然估计了，其优化目标是最大化已观测样本的 $(x,y)$ 的出现概率。</p>
 
-      
+                </article>
+                <ul class="tags-postTags">
+                    
+                    <li>
+                        <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
     </div>
 
     
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
-          
-            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/02/28/knowledge-based-text-generation/" rel="next" title="基于知识的对话系统">
-                <i class="fa fa-chevron-left"></i> 基于知识的对话系统
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/05/vae/" rel="prev" title="变分自编码器漫谈">
-                变分自编码器漫谈 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-  </div>
-
-
-          </div>
-          
-
-  
-
-
-
-        </div>
+    <nav id="gobottom" class="pagination">
         
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
-          </li>
-        </ul>
-      
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <p class="site-author-name" itemprop="name">platoneko</p>
-              <p class="site-description motion-element" itemprop="description"></p>
-          </div>
-
-          
-            <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives">
-                
-                    <span class="site-state-item-count">4</span>
-                    <span class="site-state-item-name">posts</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">3</span>
-                    <span class="site-state-item-name">categories</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">8</span>
-                    <span class="site-state-item-name">tags</span>
-                  </a>
-                </div>
-              
-            </nav>
-          
-
-          
-
-          
-
-          
-
-          
-          
-
-          
-            
-          
-          
-
-        </div>
-      </div>
-
-      
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-信息量"><span class="nav-number">1.</span> <span class="nav-text">1.信息量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-信息熵"><span class="nav-number">2.</span> <span class="nav-text">2.信息熵</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-KL散度（相对熵）"><span class="nav-number">3.</span> <span class="nav-text">3. KL散度（相对熵）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-交叉熵"><span class="nav-number">4.</span> <span class="nav-text">4. 交叉熵</span></a></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
+        <a class="prev-post" title="变分自编码器漫谈" href="/2019/04/05/vae/">
+            ← 变分自编码器漫谈
+        </a>
         
-      </div>
-    </main>
+        <span class="prev-next-post">·</span>
+        
+        <a class="next-post" title="基于知识的对话系统" href="/2019/02/28/knowledge-based-text-generation/">
+            基于知识的对话系统 →
+        </a>
+        
+    </nav>
 
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
-  <span class="with-love" id="animate">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">platoneko</span>
+    
+    <div class="inner">
+        <div id="comment"></div>
+    </div>
+    
+</div>
 
-  
+<div class="toc-bar">
+    <div class="toc-btn-bar">
+        <a href="#site-main" class="toc-btn">
+            <svg viewbox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path d="M793.024 710.272a32 32 0 1 0 45.952-44.544l-310.304-320a32 32 0 0 0-46.4 0.48l-297.696 320a32 32 0 0 0 46.848 43.584l274.752-295.328 286.848 295.808z"/></svg>
+        </a>
+        <div class="toc-btn toc-switch">
+            <svg class="toc-open" viewbox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path d="M779.776 480h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M779.776 672h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M256 288a32 32 0 1 0 0 64 32 32 0 0 0 0-64M392.576 352h387.2a32 32 0 0 0 0-64h-387.2a32 32 0 0 0 0 64M256 480a32 32 0 1 0 0 64 32 32 0 0 0 0-64M256 672a32 32 0 1 0 0 64 32 32 0 0 0 0-64"/></svg>
+            <svg class="toc-close hide" viewbox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path d="M512 960c-247.039484 0-448-200.960516-448-448S264.960516 64 512 64 960 264.960516 960 512 759.039484 960 512 960zM512 128.287273c-211.584464 0-383.712727 172.128262-383.712727 383.712727 0 211.551781 172.128262 383.712727 383.712727 383.712727 211.551781 0 383.712727-172.159226 383.712727-383.712727C895.712727 300.415536 723.551781 128.287273 512 128.287273z"/><path d="M557.05545 513.376159l138.367639-136.864185c12.576374-12.416396 12.672705-32.671738 0.25631-45.248112s-32.704421-12.672705-45.248112-0.25631l-138.560301 137.024163-136.447897-136.864185c-12.512727-12.512727-32.735385-12.576374-45.248112-0.063647-12.512727 12.480043-12.54369 32.735385-0.063647 45.248112l136.255235 136.671523-137.376804 135.904314c-12.576374 12.447359-12.672705 32.671738-0.25631 45.248112 6.271845 6.335493 14.496116 9.504099 22.751351 9.504099 8.12794 0 16.25588-3.103239 22.496761-9.247789l137.567746-136.064292 138.687596 139.136568c6.240882 6.271845 14.432469 9.407768 22.65674 9.407768 8.191587 0 16.352211-3.135923 22.591372-9.34412 12.512727-12.480043 12.54369-32.704421 0.063647-45.248112L557.05545 513.376159z"/></svg>
+        </div>
+        <a href="#gobottom" class="toc-btn">
+            <svg viewbox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path d="M231.424 346.208a32 32 0 0 0-46.848 43.584l297.696 320a32 32 0 0 0 46.4 0.48l310.304-320a32 32 0 1 0-45.952-44.544l-286.848 295.808-274.752-295.36z"/></svg>
+        </a>
+    </div>
+    <div class="toc-main">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-信息量"><span class="toc-text">1.信息量</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-信息熵"><span class="toc-text">2.信息熵</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-KL散度（相对熵）"><span class="toc-text">3. KL散度（相对熵）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-交叉熵"><span class="toc-text">4. 交叉熵</span></a></li></ol>
+    </div>
+</div>
 
-  
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
 
 
 
+	</div>
+	
+
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+            
+            
+
+<article class="read-next-card" style="background-image: url(/img/wallpaper.jpg)">
+  <header class="read-next-card-header">
+    <small class="read-next-card-header-sitetitle">&mdash; Platoneko's Notes &mdash;</small>
+    <h3 class="read-next-card-header-title">Recent Posts</h3>
+  </header>
+  <div class="read-next-divider">
+    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
+      <path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/>
+    </svg>
+  </div>
+  <div class="read-next-card-content">
+    <ul>
+      
+      
+      
+      <li>
+        <a href="/2019/04/05/vae/">变分自编码器漫谈</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/2019/03/21/cross-entropy/">关于交叉熵的一些理解</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/2019/02/28/knowledge-based-text-generation/">基于知识的对话系统</a>
+      </li>
+      
+      
+      
+      
+    </ul>
+  </div>
+  <footer class="read-next-card-footer">
+    <a href="/archives">  MORE  → </a>
+  </footer>
+</article>
+
+            
+            
+            
+
+<article class="read-next-card" style="background-image: url(/img/wallpaper.jpg)">
+    <header class="read-next-card-header tagcloud-card">
+        <h3 class="read-next-card-header-title">Categories</h3>
+    </header>
+    <div class="read-next-card-content">
+        <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/NLP/">NLP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Uncategorized/">Uncategorized</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/deep-learning/">deep learning</a></li></ul>
+    </div>
+</article>
+
+
+            
+            
+            
+
+<article class="read-next-card" style="background-image: url(/img/wallpaper.jpg)">
+	<header class="read-next-card-header tagcloud-card">
+		<h3 class="read-next-card-header-title">Tag Cloud</h3>
+	</header>
+	<div class="read-next-card-content-ext">
+		<a href="/tags/NLG/" style="font-size: 14px;">NLG</a> <a href="/tags/NLP/" style="font-size: 14px;">NLP</a> <a href="/tags/common-sense/" style="font-size: 14px;">common sense</a> <a href="/tags/deep-learning/" style="font-size: 24px;">deep learning</a> <a href="/tags/dialogue-system/" style="font-size: 14px;">dialogue system</a> <a href="/tags/etc/" style="font-size: 14px;">etc</a> <a href="/tags/machine-learning/" style="font-size: 19px;">machine learning</a> <a href="/tags/papers/" style="font-size: 14px;">papers</a>
+	</div>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+	
 
 
 
 
-
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
-</script>
-
+<div id="search" class="search-overlay">
+    <div class="search-form">
         
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="Total Visitors">
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-    </span>
-  
-
-  
-    <span class="post-meta-divider">|</span>
-  
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="Total Views">
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-    </span>
-  
+        <div class="search-overlay-logo">
+        	<img src="/img/icon.jpg" alt="Platoneko's Notes">
+        </div>
+        
+        <input id="local-search-input" class="search-input" type="text" name="search" placeholder="Search ...">
+        <a class="search-overlay-close" href="#"></a>
+    </div>
+    <div id="local-search-result"></div>
 </div>
 
+<footer class="site-footer outer">
+	<div class="site-footer-content inner">
+		<div class="copyright">
+			<a href="/" title="Platoneko's Notes">Platoneko's Notes &copy; 2019</a>
+			
+				
+			        <span hidden="true" id="/2019/03/21/cross-entropy/" class="leancloud-visitors" data-flag-title="关于交叉熵的一些理解">
+			            <span>阅读量 </span>
+			            <span class="leancloud-visitors-count">0</span>
+			        </span>
+	    		
+    		
+		</div>
+		<nav class="site-footer-nav">
+			
+			<a href="https://hexo.io" title="Hexo" target="_blank" rel="noopener">Hexo</a>
+			<a href="https://github.com/xzhih/hexo-theme-casper" title="Casper" target="_blank" rel="noopener">Casper</a>
+		</nav>
+	</div>
+</footer>
+	
 
-
-
-
-
-
-
-
-        
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
-    
-
-    
-  </div>
-
-  
 
 <script>
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-  
-  <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
-
-  
-  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.min.js"></script>
-
-  
-  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.ui.min.js"></script>
-
-  
-  <script src="/lib/three/three.min.js"></script>
-
-  
-  <script src="/lib/three/three-waves.min.js"></script>
-
-
-  
-
-
-  <script src="/js/src/utils.js?v=6.7.0"></script>
-
-  <script src="/js/src/motion.js?v=6.7.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/js/src/schemes/muse.js?v=6.7.0"></script>
-
-
-
-
-  
-  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
-<script src="/js/src/post-details.js?v=6.7.0"></script>
-
-
-
-  
-
-
-  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
-
-
-
-  
-
-
-  
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-
-  
-    
-      <script type="text/x-mathjax-config">
-  
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      
-      equationNumbers: {
-        autoNumber: "AMS"
-      }
+    if(window.navigator && navigator.serviceWorker) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister()
+            }
+        })
     }
-  });
 </script>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-      for (i = 0; i < all.length; i += 1) {
-        all[i].SourceElement().parentNode.className += ' has-jax';
-      }
-  });
+
+<script id="scriptLoad" src="/js/allinone.min.js" async></script>
+
+
+
+
+
+
+<script>
+    document.getElementById('scriptLoad').addEventListener('load', function () {
+        var bLazy = new Blazy()
+    })
 </script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
-<style>
-.MathJax_Display {
-  overflow: auto hidden;
-}
-</style><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
-    
-  
 
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
 
-  
 
-  
+
+
+<script id="valineScript" src="//unpkg.com/valine/dist/Valine.min.js" async></script>
+<script>
+    document.getElementById('valineScript').addEventListener("load", function() {
+        new Valine({
+            el: '#comment' ,
+            verify: false,
+            notify: false,
+            appId: '',
+            appKey: '',
+            placeholder: 'Just go go',
+            pageSize: 10,
+            avatar: 'mm',
+            visitor: true
+        })
+    });
+</script>
+
+
+
+
+
+<script>
+    document.getElementById('scriptLoad').addEventListener('load', function(){
+        searchFunc("/")
+    });
+</script>
+
+
+
+
+
 
 </body>
 </html>

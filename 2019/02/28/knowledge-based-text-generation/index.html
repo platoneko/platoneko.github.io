@@ -1,511 +1,178 @@
 <!DOCTYPE html>
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-<html class="theme-next mist use-motion" lang="">
-<head><meta name="generator" content="Hexo 3.8.0">
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext">
-  
-
-
-
-
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
-
-<link rel="stylesheet" href="/css/main.css?v=6.7.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
-
-
-
-
-
-
-
-<script id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    version: '6.7.0',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: false,
-    fastclick: false,
-    lazyload: false,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-  
-
-
-
-
-  <meta name="description" content="开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新- Introduction早期的基于神经网络的文本生">
-<meta name="keywords" content="deep learning,NLP,NLG,dialogue system,common sense,papers">
-<meta property="og:type" content="article">
-<meta property="og:title" content="基于知识的对话系统">
-<meta property="og:url" content="http://yoursite.com/2019/02/28/knowledge-based-text-generation/index.html">
-<meta property="og:site_name" content="Platoneko&#39;s Notes">
-<meta property="og:description" content="开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新- Introduction早期的基于神经网络的文本生">
-<meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f2.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f3.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f4.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f5.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f6.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f7.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f8.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f9.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f10.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f11.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f12.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f13.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f14.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f15.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f16.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f17.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f18.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f19.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f20.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f21.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f22.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f23.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f24.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f25.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f26.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f27.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f28.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f29.png">
-<meta property="og:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f30.png">
-<meta property="og:updated_time" content="2019-03-05T11:21:39.310Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="基于知识的对话系统">
-<meta name="twitter:description" content="开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新- Introduction早期的基于神经网络的文本生">
-<meta name="twitter:image" content="http://yoursite.com/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png">
-
-
-
-
-
-
-  <link rel="canonical" href="http://yoursite.com/2019/02/28/knowledge-based-text-generation/">
-
-
-
-<script id="page.configurations">
-  CONFIG.page = {
-    sidebar: "",
-  };
-</script>
-
-  <title>基于知识的对话系统 | Platoneko's Notes</title>
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  <noscript>
-  <style>
-  .use-motion .motion-element,
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-title { opacity: initial; }
-
-  .use-motion .logo,
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
-
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
+<html lang="en">
+
+
+
+
+
+
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="preconnect" href="//www.googletagmanager.com">
+	<link rel="preconnect" href="//zz.bdstatic.com">
+	<link rel="preconnect" href="//sp0.baidu.com">
+	<link rel="preconnect" href="//www.google-analytics.com">
+	<link rel="preconnect" href="//cdn1.lncld.net">
+	<link rel="preconnect" href="//unpkg.com">
+	<link rel="preconnect" href="//app-router.leancloud.cn">
+	<link rel="preconnect" href="//9qpuwspm.api.lncld.net">
+	<link rel="preconnect" href="//gravatar.loli.net">
+
+	<title>基于知识的对话系统 | Platoneko's Notes</title>
+
+	<meta name="HandheldFriendly" content="True">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+	<meta name="generator" content="hexo">
+	<meta name="author" content="platoneko">
+	<meta name="description" content="">
+
+	
+	<meta name="keywords" content="">
+	
+
+	
+	<link rel="shortcut icon" href="/img/icon.jpg">
+	<link rel="apple-touch-icon" href="/img/icon.jpg">
+	
+
+	
+	<meta name="theme-color" content="#3c484e">
+	<meta name="msapplication-TileColor" content="#3c484e">
+	
+
+	
+
+	
+
+	
+	<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    });
+	</script>
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Queue(function() {
+			var all = MathJax.Hub.getAllJax(), i;
+			for(i=0; i < all.length; i += 1) {
+				all[i].SourceElement().parentNode.className += ' has-jax';
+			}
+		});
+	</script>
+	<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+	</script>
+        
+
+	<meta property="og:site_name" content="Platoneko's Notes">
+	<meta property="og:type" content="article">
+	<meta property="og:title" content="基于知识的对话系统 | Platoneko's Notes">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="http://yoursite.com/2019/02/28/knowledge-based-text-generation/">
+
+	
+	<meta property="article:published_time" content="2019-02-28T12:02:00+08:00"> 
+	<meta property="article:author" content="platoneko">
+	<meta property="article:published_first" content="Platoneko's Notes, /2019/02/28/knowledge-based-text-generation/">
+	
+
+	
+	
+	<link rel="stylesheet" href="/css/allinonecss.min.css">
+
+	
+	
+	
 </head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+<body class="post-template">
+	<div class="site-wrapper">
+		
 
-  
-  
-    
-  
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
-    
 
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Platoneko's Notes</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+<header class="site-header post-site-header outer">
+    <div class="inner">
+        
+<nav class="site-nav"> 
+    <div class="site-nav-left">
+        <ul class="nav">
+            <li>
+                
+                
+                <a class="site-nav-logo" href="/" title="Platoneko's Notes">
+                    <img src="/img/icon.jpg" alt="Platoneko's Notes">
+                </a>
+                
+                
+            </li>
+            
+            
+            <li>
+                <a href="/about" title="ABOUT">ABOUT</a>
+            </li>
+            
+            <li>
+                <a href="/archives" title="ARCHIVES">ARCHIVES</a>
+            </li>
+            
+            
+        </ul> 
     </div>
     
-      
-        <p class="site-subtitle">A platonic fantast learning AI</p>
-      
+    <div class="search-button-area">
+        <a href="#search" class="search-button">Search ...</a>
+    </div>
+     
+    <div class="site-nav-right">
+        
+        <a href="#search" class="search-button">Search ...</a>
+         
+        
+<div class="social-links">
     
     
-  </div>
-
-  <div class="site-nav-toggle">
-    <button aria-label="Toggle navigation bar">
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
+    <a class="social-link" title="github" href="https://github.com/platoneko" target="_blank" rel="noopener">
+        <svg viewbox="0 0 1049 1024" xmlns="http://www.w3.org/2000/svg"><path d="M524.979332 0C234.676191 0 0 234.676191 0 524.979332c0 232.068678 150.366597 428.501342 358.967656 498.035028 26.075132 5.215026 35.636014-11.299224 35.636014-25.205961 0-12.168395-0.869171-53.888607-0.869171-97.347161-146.020741 31.290159-176.441729-62.580318-176.441729-62.580318-23.467619-60.841976-58.234462-76.487055-58.234463-76.487055-47.804409-32.15933 3.476684-32.15933 3.476685-32.15933 53.019436 3.476684 80.83291 53.888607 80.83291 53.888607 46.935238 79.963739 122.553122 57.365291 152.97411 43.458554 4.345855-33.897672 18.252593-57.365291 33.028501-70.402857-116.468925-12.168395-239.022047-57.365291-239.022047-259.012982 0-57.365291 20.860106-104.300529 53.888607-140.805715-5.215026-13.037566-23.467619-66.926173 5.215027-139.067372 0 0 44.327725-13.906737 144.282399 53.888607 41.720212-11.299224 86.917108-17.383422 131.244833-17.383422s89.524621 6.084198 131.244833 17.383422C756.178839 203.386032 800.506564 217.29277 800.506564 217.29277c28.682646 72.1412 10.430053 126.029806 5.215026 139.067372 33.897672 36.505185 53.888607 83.440424 53.888607 140.805715 0 201.64769-122.553122 245.975415-239.891218 259.012982 19.121764 16.514251 35.636014 47.804409 35.636015 97.347161 0 70.402857-0.869171 126.898978-0.869172 144.282399 0 13.906737 9.560882 30.420988 35.636015 25.205961 208.601059-69.533686 358.967656-265.96635 358.967655-498.035028C1049.958663 234.676191 814.413301 0 524.979332 0z"/></svg>
+    </a>
+    
+    
+    
+    
+    
+    
 </div>
-
-
-
-<nav class="site-nav">
-  
-    <ul id="menu" class="menu">
-      
-        
-        
-        
-          
-          <li class="menu-item menu-item-首页">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
-
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-标签">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
-
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-分类">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
-
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-归档">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
-
-  </li>
-
-      
-      
-    </ul>
-  
-
-  
-    
-
-  
-
-  
+    </div>
 </nav>
+    </div>
+</header>
 
 
-
-  
-
-
-
-</div>
-    </header>
-
-    
-
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/28/knowledge-based-text-generation/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="platoneko">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Platoneko's Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">基于知识的对话系统
-
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
+<div id="site-main" class="site-main outer" role="main">
+    <div class="inner">
+        <header class="post-full-header">
+            <div class="post-full-meta">
+                <time class="post-full-meta-date" datetime="2019-02-28T04:59:06.000Z">
+                    2019-02-28
+                </time>
                 
-              
-
-              <time title="Created: 2019-02-28 12:59:06" itemprop="dateCreated datePublished" datetime="2019-02-28T12:59:06+08:00">2019-02-28</time>
-            
-
-            
-              
-
-              
+                <span class="date-divider">/</span>
                 
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-03-05 19:21:39" itemprop="dateModified" datetime="2019-03-05T19:21:39+08:00">2019-03-05</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a></span>
-
+                <a href="/categories/NLP/">NLP</a>&nbsp;&nbsp;
                 
                 
-              
-            </span>
-          
-
-          
+            </div>
+            <h1 class="post-full-title">基于知识的对话系统</h1>
+        </header>
+        <div class="post-full no-image">
             
-            
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="post-meta-item-icon">
-            <i class="fa fa-eye"></i>
-             Views:  
-            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
-            </span>
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <p>开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新-</p>
+            <div class="post-full-content">
+                <article id="photoswipe" class="markdown-body">
+                    <p>开始涉猎基于知识的文本生成任务（Text Generation），重点主要在外部知识的嵌入（embedding）和编码（encoding）以及如何将编码后的知识集成到文本生成任务当中。其中的知识一般是三元组形式（triplet）也可以是非结构化的自然语言文本;所涉及的生成任务包括对话生成、生成式问答系统、故事结尾推测及补全等。-后续可能还会更新-</p>
 <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a><strong>Introduction</strong></h1><p>早期的基于神经网络的文本生成任务大多是纯数据驱动的基于Seq2Seq框架的（暴力）模型，甚至是直接将NMT任务的Encoder-Decoder框架搬过来，仅仅是换了个数据集进行调参（如今这种灌水肯定是不行了）。这样直接生搬硬套的模型虽然确实产生了一些有意思的结果，生成的文本看上去很接近自然语言，但是过于ambiguous往往缺乏有实质信息(informative)的内容。我们就从直觉出发，显然一个正常人在对话和写作过程会加入个人的经验、常识等超出上下文内容的信息，因此将外界知识引入是必不可少的。无论是对自然语言的理解（NLU）还是生成自然语言（NLG），知识的引入都肯定会使系统效果有显著提升。从训练数据上来看，我们要完成从对上下文的理解、推理最后到文本的生成，上下文中出现的一些实体（entity）隐含的关系、性质等信息往往要借助外界知识才能完善，这些关系性质仅仅从训练数据集中是无法获取和推理的，直接去拟合上下文的匹配其结果往往只能使系统学习到语法结构和一些最简单最基本的标准 response。</p>
-<a id="more"></a>
 <p><br></p>
 <h1 id="Augmenting-End-to-End-Dialogue-System-with-Commonsense-Knowledge"><a href="#Augmenting-End-to-End-Dialogue-System-with-Commonsense-Knowledge" class="headerlink" title="Augmenting End-to-End Dialogue System with Commonsense Knowledge"></a><strong>Augmenting End-to-End Dialogue System with Commonsense Knowledge</strong></h1><p><a href="https://arxiv.org/pdf/1709.05453.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1709.05453.pdf</a></p>
 <blockquote>
@@ -517,14 +184,14 @@
 </blockquote>
 <p>论文的数据集是形如 &lt;$message$, $response$, $label$&gt; 的三元组，$label$ 用来标识 $response$ 是否和 $message$ 匹配，目标模型其实是一个二分类模型，因此我们主要关注 commonsense knowledge 的 embedding 和 encoding。</p>
 <p>论文的commonsense knowledge采用通过ConceptNet获取的三元组 &lt;$concept1$, $relation$, $concept2$&gt; 作为assertion并假设commonsense knowledge base由大量关于concepts $C$ 的 assertions $A$ 组成。值得注意的是，concept $c$ 可以是单个单词也可以是多个单词。作者构建了一个以 $c$ 作为key，以所有包含 $c$（可以是 $concept1$ 或 $concept2$）的assertions作为value的字典。设 $A_x$ 为message $x$ 中所有相关的assertions的集合，作者通过n-gram matching的方法将match到的concept对应的所有assertions加入到 $A_x$。</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png" data-index="0" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png"></div>
 
 <p>论文使用LSTM来encoding  $A_x$ 中的所有assertions。每个形如 &lt;$c_1$, $r$, $c_2$&gt; 的 $a$ 都被视为一个tokens序列，e.g.对于multi-word concept $c_1$, $c_2$, $a$ = $[c_{11}, c_{12}, c_{13}…, r, c_{21}, c_{22}, c_{23}…]$ 。作者将concept和relation中的词当作常规词一并加入vocabulary $V$ 中进行embedding。</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f2.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f2.png" data-index="1" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f2.png"></div>
 
 <p>我们不详细讨论模型后面的task-orient部分。但是从上图可以看到，作者没有显式计算assertions $a$ 与message $x$ 的相关性score，而是分别计算response $y$ 与 message $x$ 和 assertions $a$ 的score。可以认为assertions $a$ 的集成，<strong>其本质就是给原模型加入了一个response要与message中出现的concept1的通过某种relation关联的concept2相关的先验偏好。</strong>（个人认为在对message进行encoding的过程中也有必要加入commonsense knowledge，因为前面的词的相关concept可能对后面的词的语义产生影响。）</p>
 <p>之后作者还提出了一个变种：</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f3.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f3.png" data-index="2" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f3.png"></div>
 
 <p>其中 $p_i$ 是 $x$ 对 $a_i$ 的dot-product attention score，使与message context相关性高的assertion具有更大的权值。作者在这里把 $A_x$ 视作Memory Networks的memory component。</p>
 <p><br></p>
@@ -542,34 +209,34 @@
 <p><strong>Model</strong></p>
 </blockquote>
 <p><strong>1. CCM模型</strong></p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f4.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f4.png" data-index="3" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f4.png"></div>
 
 <p>如图所示，基于n个词的输入，会输出m个词作为回复，模型的目的就是预估这么一个概率分布 $P(Y|X,G)=\Pi^m_{t=1}P(y_t|y_{&lt;t},X,G)$，即将图信息 $G$ 加入到概率分布的计算中。</p>
 <p>在信息读取时，根据每个输入的词 $x$，找到常识知识图谱中对应的子图（若没有对应的子图，则会生成一个特殊的图 <em>Not_A_Fact</em>），每个子图又包含若干三元组。</p>
 <p><strong>2. 知识编译模块（Knowledge Interpreter）</strong></p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f5.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f5.png" data-index="4" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f5.png"></div>
 
 <p>如图所示，当编译到”rays”时，会把这个词在知识图谱中相关的子图得到，并生成子图向量。每一个子图都包含了key entity（即这里的”rays”），以及这个”rays”的邻居实体和相连关系。</p>
 <p>对于词”of”，由于无法找到对应子图，所以就采用特殊子图 <em>Not_A_Fact</em> 来编译。之后采用基于静态注意力机制，CCM会将子图映射为向量，然后把词向量 $w(x_t)$ 和 $g_i$ 拼接作为encoder中GRU的输入。</p>
 <p>对于静态图注意力机制，CCM将子图中所有三元组 $k_n=(h_n, r_n, t_n)$ 考虑进来：</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f6.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f6.png" data-index="5" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f6.png"></div>
 
 <p>其中三元组 $k_n=(h_n, r_n, t_n)$ 选用<strong>TranE</strong>进行embedding。</p>
 <p><strong>3. 知识生成模块（Knowledge Aware Generator）</strong></p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f7.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f7.png" data-index="6" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f7.png"></div>
 
 <p>在生成时，不同于静态图注意力机制，模型会读取所有相关的子图，而不是当前词对应的子图，并计算decoder state $s_t$ 时使用每一个子图 $g_i$ 的概率：</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f8.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f8.png" data-index="7" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f8.png"></div>
 
 <p>之后模型会计算选择decoder state $s_t$ 时每个子图 $g_i$ 中选择一个三元组 $k_j$ 来生成单词的概率：</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f9.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f9.png" data-index="8" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f9.png"></div>
 
 <p>生成时，会根据计算结果，来选择是生成通用字（generic word）还是子图中的实体：</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f10.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f10.png" data-index="9" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f10.png"></div>
 
 <p><strong>4. 损失函数</strong></p>
 <p>损失函数为预期输出与实际输出的交叉熵，除此之外，为了监控选择通用词还是实体的概率，又增加了一个交叉熵：</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f11.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f11.png" data-index="10" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f11.png"></div>
 
 <blockquote>
 <p><strong>Experiment</strong></p>
@@ -581,14 +248,14 @@
 <p>而选用metric的时候，采用了刻画回复内容是否语法正确且贴近主题的perplexity，以及有多少知识图谱实体被生成的entity score。</p>
 <p><strong>实验结果</strong></p>
 <p>如下图所示为根据perplexity和entity score进行的性能比较，可见CCM的perplexity最低，且选取entity的数量最多。并且，在低频词时，选用的entity更多，这表示在训练时比较罕见的词（实体）会需要更多的背景知识来生成答复。</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f12.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f12.png" data-index="11" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f12.png"></div>
 
 <p>另外，作者还采用crowdsourcing的方式来人为审核response的质量，并采用了两种度量值：appropriateness（内容是否语法正确，是否与主题相关，是否有逻辑）和 informativeness（内容是否提供了post之外的新信息）。</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f13.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f13.png" data-index="12" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f13.png"></div>
 
 <p>从上图可见，CCM对于三个基线系统来说，都有将近60%的回复是更优的。并且在OOV数据集上，CCM比seq2seq不知道高到哪里去了，这是由于CCM对于这些低频词或未登录词，可以用知识图谱去补全，而seq2seq没有这样的知识来源。</p>
 <p>如下图所示，当在post中遇到未登录词”breakable”时，seq2seq和MemNet都只能输出一些通用的、模棱两可的、毫无信息量的回复。CopyNet能够利用知识图谱输出一些东西，但是并不合适。而CCM却可以输出一个合理的回复。</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f14.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f14.png" data-index="13" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f14.png"></div>
 
 <p><br></p>
 <h1 id="Knowledge-Diffusion-for-Neural-Dialogue-Generation"><a href="#Knowledge-Diffusion-for-Neural-Dialogue-Generation" class="headerlink" title="Knowledge Diffusion for Neural Dialogue Generation"></a>Knowledge Diffusion for Neural Dialogue Generation</h1><p><a href="http://aclweb.org/anthology/P18-1138" target="_blank" rel="noopener">http://aclweb.org/anthology/P18-1138</a></p>
@@ -599,7 +266,7 @@
 <ol>
 <li><strong><em>facts matching</em></strong>： 尽管有些对话是与facts相关的询问（inquiries），即主体和关系可以很容易被识别出来，但是对于某些对话，主体和关系是难以捉摸的，给准确的facts matching造成麻烦。下图展示了一个示例：Item 1 和 2 都在谈论电影”Titanic”，其中item 1是个典型的问答式对话，而item 2则是一个知识相关的没有任何显式关系的聊天式对话（chit-chat）。在item 2中去定义准确的fact match是非常困难的。</li>
 </ol>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f15.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f15.png" data-index="14" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f15.png"></div>
 
 <ol>
 <li><strong><em>entity diffusion</em></strong>：另一个显著的现象是，对话常常会从一个实体转移到另一个实体。如item 3 和 4 都和实体”Titanic”有关，然而回复中的实体都是其他的类似的电影。像这样的发散式关系，能够在现有的知识图谱三元组中去捕捉到它们的情况是十分罕见的。</li>
@@ -609,7 +276,7 @@
 <p><strong>Model</strong></p>
 </blockquote>
 <p><strong>Overview</strong></p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f16.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f16.png" data-index="15" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f16.png"></div>
 
 <p>论文构建了一个多轮对话（Multi-turn）模型。模型由四部分组成：</p>
 <ol>
@@ -622,41 +289,41 @@
 <p>为了捕捉不同层面的信息，作者通过两个独立的RNN来学习utterance的表示，得到两个隐藏状态序列：<br>$H^C=(h_1^C, h_2^C, …, h_{Nx}^C)$ 和 $H^K=(h_1^K, h_2^K, …, h_{Nx}^K)$ 。<br>$h_{Nx}^C$ 作为之后用来追踪对话状态的上下文RNN的输入；$h_{Nx}^K$ 应用在knowledge retriever中，用来将知识实体关系编码进输入的utterance。上图 $X_1$ 中”director”和”Titanic”就是knowledge elements。</p>
 <p><strong>2. Knowledge Retriver</strong></p>
 <p>Knowledge retriever从知识库中抽取固定数量的facts并指出它们的重要程度。</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f17.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f17.png" data-index="16" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f17.png"></div>
 
 <ol>
 <li><strong>Facts Matching</strong></li>
 </ol>
 <p>给定一个input utterance $X$，通过字符串匹配（string matching）、实体链接（entity linking）或命名实体识别（named entity recognition）来从知识库和对话历史中抽取$N_f$个相关facts $F = \{f_1,f_2,…,f_{N_f}\}$。$F$ 中的每个triplet的embedding通过简单地将entities和relation的embedding取均值得到 $h_f = \{h_{f_1},h_{f_2},…,h_{f_{N_f}}\}$。</p>
 <p>之后计算每个fact和input utterance之间的相关系数（范围从0到1）：</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f18.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f18.png" data-index="17" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f18.png"></div>
 
 <p>对于多轮对话，出现在之前的utterance的实体也会继承并保存在 $F$ 中。作者通过加权平均来计算相关事实表示（<em>relevant fact representation</em>） $C^f$:</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f19.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f19.png" data-index="18" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f19.png"></div>
 
 <ol>
 <li><strong>Entity Diffusion</strong></li>
 </ol>
 <p>作者计算了知识库中的所有实体（除了已经在之前的utterance出现过的实体）与相关fact的相似系数 $r^e$（范围从0到1）：</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f20.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f20.png" data-index="19" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f20.png"></div>
 
 <p>这里$e^k$是entity embedding。得分最高的$N_e$个实体被视作相似实体。相似实体表示（<em>similar entity representation</em>）$C^s$：</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f21.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f21.png" data-index="20" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f21.png"></div>
 
 <p><strong>3. Context RNN</strong></p>
 <p>Context RNN 记录了utterance (sentence) level对话状态。Context RNN考虑了utterance表示和知识表示。</p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f22.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f22.png" data-index="21" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f22.png"></div>
 
 <p><strong>4. Decoder</strong></p>
 <script type="math/tex; mode=display">C=[h_t^T, C^f, C^s]</script><script type="math/tex; mode=display">R=[r^f, r^e]</script><ol>
 <li><strong>Vanilla decoder</strong> 仅通过 $C$, $R$ 产生response $Y$：</li>
 </ol>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f23.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f23.png" data-index="22" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f23.png"></div>
 
 <ol>
 <li><strong>Probabilistic gated decoder</strong> 使用了一个门控变量 $z_t$ 来表明位于第t个位置的词应该从普通词中产生还是从知识实体中产生：</li>
 </ol>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f24.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f24.png" data-index="23" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f24.png"></div>
 
 <p>其中 $p(z_t|s_t;\theta)$ 通过逻辑回归来计算；$p(y_t|R,z_t=1;\theta)$ 近似于知识项（knowledge items）的相关系数。</p>
 <p>考虑到在生成回复中，如果一个实体被反复使用，生成的回复的多样性将会减小。因此，当一个知识项出现在回复中时，其相应的相关系数应该减小，以避免一个item出现多次。为此，作者提出了两种范围追踪机制（coverage tracking mechanisms）：1） <strong><em>Mask coefficient tracker</em></strong> 直接将出现的item的系数减少到0来保证其不会在回复中再次出现；2） <strong><em>Coeffient attenuation tracker</em></strong> ：</p>
@@ -684,9 +351,9 @@
 </li>
 </ul>
 <p><strong>Result</strong></p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f25.png" width="400"></div>
+<div align="center"><img width="400" class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f25.png" data-index="24" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f25.png"></div>
 
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f26.png" width="400"></div>
+<div align="center"><img width="400" class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f26.png" data-index="25" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f26.png"></div>
 
 <p><br></p>
 <h1 id="Mem2Seq-Effective-Incorporating-Knowledge-Based-into-End-to-End-Task-Orient-Dialog-Systems"><a href="#Mem2Seq-Effective-Incorporating-Knowledge-Based-into-End-to-End-Task-Orient-Dialog-Systems" class="headerlink" title="Mem2Seq: Effective Incorporating Knowledge Based into End-to-End Task-Orient Dialog Systems"></a>Mem2Seq: Effective Incorporating Knowledge Based into End-to-End Task-Orient Dialog Systems</h1><p><a href="https://arxiv.org/pdf/1804.08217.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1804.08217.pdf</a></p>
@@ -700,7 +367,7 @@
 <blockquote>
 <p><strong>Model</strong></p>
 </blockquote>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f27.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f27.png" data-index="26" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f27.png"></div>
 
 <p>模型由两部分组成：MemNN encoder生成对话历史的向量表示；memory decoder从记忆中读取和copy来生成回复。</p>
 <p>对话历史定义为一个tokens序列：$X = \{ x_1, \dots, x_n, sentinel \}$ , $sentinel$ 是一个标志字符；</p>
@@ -732,481 +399,349 @@ n+l+1 \,\,\,\, otherwise
 <p><strong>Detail</strong></p>
 <p>使用Adam optimizer，学习率在1e-3到1e-4之间。MemNN采用了hops K =  1, 3, 6三种来对比实验。Dropout rate在0.1到0.4之间，同时还将部分输入word mask成unknown token来模拟OOV情况。</p>
 <p><strong>Result</strong></p>
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f28.png"></div>
+<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f28.png" data-index="27" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f28.png"></div>
 
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f29.png" width="400"></div>
+<div align="center"><img width="400" class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f29.png" data-index="28" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f29.png"></div>
 
-<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f30.png" width="400"></div>
-      
+<div align="center"><img width="400" class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f30.png" data-index="29" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f30.png"></div>
+
+                </article>
+                <ul class="tags-postTags">
+                    
+                    <li>
+                        <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/NLP/" rel="tag"># NLP</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/NLG/" rel="tag"># NLG</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/dialogue-system/" rel="tag"># dialogue system</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/common-sense/" rel="tag"># common sense</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/papers/" rel="tag"># papers</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
     </div>
 
     
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
-          
-            <a href="/tags/NLP/" rel="tag"># NLP</a>
-          
-            <a href="/tags/NLG/" rel="tag"># NLG</a>
-          
-            <a href="/tags/dialogue-system/" rel="tag"># dialogue system</a>
-          
-            <a href="/tags/common-sense/" rel="tag"># common sense</a>
-          
-            <a href="/tags/papers/" rel="tag"># papers</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/02/27/markdown-math-expression/" rel="next" title="markdown数学表达式">
-                <i class="fa fa-chevron-left"></i> markdown数学表达式
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/03/21/cross-entropy/" rel="prev" title="关于交叉熵的一些理解">
-                关于交叉熵的一些理解 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-  </div>
-
-
-          </div>
-          
-
-  
-
-
-
-        </div>
+    <nav id="gobottom" class="pagination">
         
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
-          </li>
-        </ul>
-      
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <p class="site-author-name" itemprop="name">platoneko</p>
-              <p class="site-description motion-element" itemprop="description"></p>
-          </div>
-
-          
-            <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives">
-                
-                    <span class="site-state-item-count">4</span>
-                    <span class="site-state-item-name">posts</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">3</span>
-                    <span class="site-state-item-name">categories</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">8</span>
-                    <span class="site-state-item-name">tags</span>
-                  </a>
-                </div>
-              
-            </nav>
-          
-
-          
-
-          
-
-          
-
-          
-          
-
-          
-            
-          
-          
-
-        </div>
-      </div>
-
-      
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Augmenting-End-to-End-Dialogue-System-with-Commonsense-Knowledge"><span class="nav-number">2.</span> <span class="nav-text">Augmenting End-to-End Dialogue System with Commonsense Knowledge</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Commonsense-Knowledge-Aware-Conversation-Generation-with-Graph-Attention"><span class="nav-number">3.</span> <span class="nav-text">Commonsense Knowledge Aware Conversation Generation with Graph Attention</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Knowledge-Diffusion-for-Neural-Dialogue-Generation"><span class="nav-number">4.</span> <span class="nav-text">Knowledge Diffusion for Neural Dialogue Generation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mem2Seq-Effective-Incorporating-Knowledge-Based-into-End-to-End-Task-Orient-Dialog-Systems"><span class="nav-number">5.</span> <span class="nav-text">Mem2Seq: Effective Incorporating Knowledge Based into End-to-End Task-Orient Dialog Systems</span></a></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
+        <a class="prev-post" title="关于交叉熵的一些理解" href="/2019/03/21/cross-entropy/">
+            ← 关于交叉熵的一些理解
+        </a>
         
-      </div>
-    </main>
+        <span class="prev-next-post">·</span>
+        
+        <a class="next-post" title="markdown数学表达式" href="/2019/02/27/markdown-math-expression/">
+            markdown数学表达式 →
+        </a>
+        
+    </nav>
 
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
-  <span class="with-love" id="animate">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">platoneko</span>
+    
+    <div class="inner">
+        <div id="comment"></div>
+    </div>
+    
+</div>
 
-  
+<div class="toc-bar">
+    <div class="toc-btn-bar">
+        <a href="#site-main" class="toc-btn">
+            <svg viewbox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path d="M793.024 710.272a32 32 0 1 0 45.952-44.544l-310.304-320a32 32 0 0 0-46.4 0.48l-297.696 320a32 32 0 0 0 46.848 43.584l274.752-295.328 286.848 295.808z"/></svg>
+        </a>
+        <div class="toc-btn toc-switch">
+            <svg class="toc-open" viewbox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path d="M779.776 480h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M779.776 672h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M256 288a32 32 0 1 0 0 64 32 32 0 0 0 0-64M392.576 352h387.2a32 32 0 0 0 0-64h-387.2a32 32 0 0 0 0 64M256 480a32 32 0 1 0 0 64 32 32 0 0 0 0-64M256 672a32 32 0 1 0 0 64 32 32 0 0 0 0-64"/></svg>
+            <svg class="toc-close hide" viewbox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path d="M512 960c-247.039484 0-448-200.960516-448-448S264.960516 64 512 64 960 264.960516 960 512 759.039484 960 512 960zM512 128.287273c-211.584464 0-383.712727 172.128262-383.712727 383.712727 0 211.551781 172.128262 383.712727 383.712727 383.712727 211.551781 0 383.712727-172.159226 383.712727-383.712727C895.712727 300.415536 723.551781 128.287273 512 128.287273z"/><path d="M557.05545 513.376159l138.367639-136.864185c12.576374-12.416396 12.672705-32.671738 0.25631-45.248112s-32.704421-12.672705-45.248112-0.25631l-138.560301 137.024163-136.447897-136.864185c-12.512727-12.512727-32.735385-12.576374-45.248112-0.063647-12.512727 12.480043-12.54369 32.735385-0.063647 45.248112l136.255235 136.671523-137.376804 135.904314c-12.576374 12.447359-12.672705 32.671738-0.25631 45.248112 6.271845 6.335493 14.496116 9.504099 22.751351 9.504099 8.12794 0 16.25588-3.103239 22.496761-9.247789l137.567746-136.064292 138.687596 139.136568c6.240882 6.271845 14.432469 9.407768 22.65674 9.407768 8.191587 0 16.352211-3.135923 22.591372-9.34412 12.512727-12.480043 12.54369-32.704421 0.063647-45.248112L557.05545 513.376159z"/></svg>
+        </div>
+        <a href="#gobottom" class="toc-btn">
+            <svg viewbox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"><path d="M231.424 346.208a32 32 0 0 0-46.848 43.584l297.696 320a32 32 0 0 0 46.4 0.48l310.304-320a32 32 0 1 0-45.952-44.544l-286.848 295.808-274.752-295.36z"/></svg>
+        </a>
+    </div>
+    <div class="toc-main">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Introduction"><span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Augmenting-End-to-End-Dialogue-System-with-Commonsense-Knowledge"><span class="toc-text">Augmenting End-to-End Dialogue System with Commonsense Knowledge</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Commonsense-Knowledge-Aware-Conversation-Generation-with-Graph-Attention"><span class="toc-text">Commonsense Knowledge Aware Conversation Generation with Graph Attention</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Knowledge-Diffusion-for-Neural-Dialogue-Generation"><span class="toc-text">Knowledge Diffusion for Neural Dialogue Generation</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Mem2Seq-Effective-Incorporating-Knowledge-Based-into-End-to-End-Task-Orient-Dialog-Systems"><span class="toc-text">Mem2Seq: Effective Incorporating Knowledge Based into End-to-End Task-Orient Dialog Systems</span></a></li></ol>
+    </div>
+</div>
 
-  
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
 
 
 
+	</div>
+	
+
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+            
+            
+
+<article class="read-next-card" style="background-image: url(/img/wallpaper.jpg)">
+  <header class="read-next-card-header">
+    <small class="read-next-card-header-sitetitle">&mdash; Platoneko's Notes &mdash;</small>
+    <h3 class="read-next-card-header-title">Recent Posts</h3>
+  </header>
+  <div class="read-next-divider">
+    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
+      <path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/>
+    </svg>
+  </div>
+  <div class="read-next-card-content">
+    <ul>
+      
+      
+      
+      <li>
+        <a href="/2019/04/05/vae/">变分自编码器漫谈</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/2019/03/21/cross-entropy/">关于交叉熵的一些理解</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/2019/02/28/knowledge-based-text-generation/">基于知识的对话系统</a>
+      </li>
+      
+      
+      
+      
+    </ul>
+  </div>
+  <footer class="read-next-card-footer">
+    <a href="/archives">  MORE  → </a>
+  </footer>
+</article>
+
+            
+            
+            
+
+<article class="read-next-card" style="background-image: url(/img/wallpaper.jpg)">
+    <header class="read-next-card-header tagcloud-card">
+        <h3 class="read-next-card-header-title">Categories</h3>
+    </header>
+    <div class="read-next-card-content">
+        <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/NLP/">NLP</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Uncategorized/">Uncategorized</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/deep-learning/">deep learning</a></li></ul>
+    </div>
+</article>
+
+
+            
+            
+            
+
+<article class="read-next-card" style="background-image: url(/img/wallpaper.jpg)">
+	<header class="read-next-card-header tagcloud-card">
+		<h3 class="read-next-card-header-title">Tag Cloud</h3>
+	</header>
+	<div class="read-next-card-content-ext">
+		<a href="/tags/NLG/" style="font-size: 14px;">NLG</a> <a href="/tags/NLP/" style="font-size: 14px;">NLP</a> <a href="/tags/common-sense/" style="font-size: 14px;">common sense</a> <a href="/tags/deep-learning/" style="font-size: 24px;">deep learning</a> <a href="/tags/dialogue-system/" style="font-size: 14px;">dialogue system</a> <a href="/tags/etc/" style="font-size: 14px;">etc</a> <a href="/tags/machine-learning/" style="font-size: 19px;">machine learning</a> <a href="/tags/papers/" style="font-size: 14px;">papers</a>
+	</div>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+	
 
 
 
 
-
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
-</script>
-
+<div id="search" class="search-overlay">
+    <div class="search-form">
         
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="Total Visitors">
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-    </span>
-  
-
-  
-    <span class="post-meta-divider">|</span>
-  
-
-  
-    <span class="post-meta-item-icon">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="Total Views">
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-    </span>
-  
+        <div class="search-overlay-logo">
+        	<img src="/img/icon.jpg" alt="Platoneko's Notes">
+        </div>
+        
+        <input id="local-search-input" class="search-input" type="text" name="search" placeholder="Search ...">
+        <a class="search-overlay-close" href="#"></a>
+    </div>
+    <div id="local-search-result"></div>
 </div>
 
+<footer class="site-footer outer">
+	<div class="site-footer-content inner">
+		<div class="copyright">
+			<a href="/" title="Platoneko's Notes">Platoneko's Notes &copy; 2019</a>
+			
+				
+			        <span hidden="true" id="/2019/02/28/knowledge-based-text-generation/" class="leancloud-visitors" data-flag-title="基于知识的对话系统">
+			            <span>阅读量 </span>
+			            <span class="leancloud-visitors-count">0</span>
+			        </span>
+	    		
+    		
+		</div>
+		<nav class="site-footer-nav">
+			
+			<a href="https://hexo.io" title="Hexo" target="_blank" rel="noopener">Hexo</a>
+			<a href="https://github.com/xzhih/hexo-theme-casper" title="Casper" target="_blank" rel="noopener">Casper</a>
+		</nav>
+	</div>
+</footer>
+	
 
-
-
-
-
-
-
-
-        
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
-    
-
-    
-  </div>
-
-  
 
 <script>
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-  
-  <script src="//cdn.jsdelivr.net/npm/jquery@2/dist/jquery.min.js"></script>
-
-  
-  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.min.js"></script>
-
-  
-  <script src="//cdn.jsdelivr.net/npm/velocity-animate@1/velocity.ui.min.js"></script>
-
-  
-  <script src="/lib/three/three.min.js"></script>
-
-  
-  <script src="/lib/three/three-waves.min.js"></script>
-
-
-  
-
-
-  <script src="/js/src/utils.js?v=6.7.0"></script>
-
-  <script src="/js/src/motion.js?v=6.7.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/js/src/schemes/muse.js?v=6.7.0"></script>
-
-
-
-
-  
-  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
-<script src="/js/src/post-details.js?v=6.7.0"></script>
-
-
-
-  
-
-
-  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
-
-
-
-  
-
-
-  
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-
-  
-    
-      <script type="text/x-mathjax-config">
-  
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      
-      equationNumbers: {
-        autoNumber: "AMS"
-      }
+    if(window.navigator && navigator.serviceWorker) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister()
+            }
+        })
     }
-  });
 </script>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-      for (i = 0; i < all.length; i += 1) {
-        all[i].SourceElement().parentNode.className += ' has-jax';
-      }
-  });
+
+<script id="scriptLoad" src="/js/allinone.min.js" async></script>
+
+
+
+
+
+
+<script>
+    document.getElementById('scriptLoad').addEventListener('load', function () {
+        var bLazy = new Blazy()
+    })
 </script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
-<style>
-.MathJax_Display {
-  overflow: auto hidden;
-}
-</style><!-- hexo-inject:begin --><!-- hexo-inject:end -->
-
-    
-  
 
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
 
-  
 
-  
+
+
+<script id="valineScript" src="//unpkg.com/valine/dist/Valine.min.js" async></script>
+<script>
+    document.getElementById('valineScript').addEventListener("load", function() {
+        new Valine({
+            el: '#comment' ,
+            verify: false,
+            notify: false,
+            appId: '',
+            appKey: '',
+            placeholder: 'Just go go',
+            pageSize: 10,
+            avatar: 'mm',
+            visitor: true
+        })
+    });
+</script>
+
+
+
+
+
+<script>
+    document.getElementById('scriptLoad').addEventListener('load', function(){
+        searchFunc("/")
+    });
+</script>
+
+
+
+
+
 
 </body>
 </html>
