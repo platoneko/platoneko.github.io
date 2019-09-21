@@ -184,14 +184,14 @@
 </blockquote>
 <p>论文的数据集是形如 &lt;$message$, $response$, $label$&gt; 的三元组，$label$ 用来标识 $response$ 是否和 $message$ 匹配，目标模型其实是一个二分类模型，因此我们主要关注 commonsense knowledge 的 embedding 和 encoding。</p>
 <p>论文的commonsense knowledge采用通过ConceptNet获取的三元组 &lt;$concept1$, $relation$, $concept2$&gt; 作为assertion并假设commonsense knowledge base由大量关于concepts $C$ 的 assertions $A$ 组成。值得注意的是，concept $c$ 可以是单个单词也可以是多个单词。作者构建了一个以 $c$ 作为key，以所有包含 $c$（可以是 $concept1$ 或 $concept2$）的assertions作为value的字典。设 $A_x$ 为message $x$ 中所有相关的assertions的集合，作者通过n-gram matching的方法将match到的concept对应的所有assertions加入到 $A_x$。</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png" data-index="0" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f1.png" data-index="0"></div>
 
 <p>论文使用LSTM来encoding  $A_x$ 中的所有assertions。每个形如 &lt;$c_1$, $r$, $c_2$&gt; 的 $a$ 都被视为一个tokens序列，e.g.对于multi-word concept $c_1$, $c_2$, $a$ = $[c_{11}, c_{12}, c_{13}…, r, c_{21}, c_{22}, c_{23}…]$ 。作者将concept和relation中的词当作常规词一并加入vocabulary $V$ 中进行embedding。</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f2.png" data-index="1" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f2.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f2.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f2.png" data-index="1"></div>
 
 <p>我们不详细讨论模型后面的task-orient部分。但是从上图可以看到，作者没有显式计算assertions $a$ 与message $x$ 的相关性score，而是分别计算response $y$ 与 message $x$ 和 assertions $a$ 的score。可以认为assertions $a$ 的集成，<strong>其本质就是给原模型加入了一个response要与message中出现的concept1的通过某种relation关联的concept2相关的先验偏好。</strong>（个人认为在对message进行encoding的过程中也有必要加入commonsense knowledge，因为前面的词的相关concept可能对后面的词的语义产生影响。）</p>
 <p>之后作者还提出了一个变种：</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f3.png" data-index="2" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f3.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f3.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f3.png" data-index="2"></div>
 
 <p>其中 $p_i$ 是 $x$ 对 $a_i$ 的dot-product attention score，使与message context相关性高的assertion具有更大的权值。作者在这里把 $A_x$ 视作Memory Networks的memory component。</p>
 <p><br></p>
@@ -209,34 +209,34 @@
 <p><strong>Model</strong></p>
 </blockquote>
 <p><strong>1. CCM模型</strong></p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f4.png" data-index="3" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f4.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f4.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f4.png" data-index="3"></div>
 
 <p>如图所示，基于n个词的输入，会输出m个词作为回复，模型的目的就是预估这么一个概率分布 $P(Y|X,G)=\Pi^m_{t=1}P(y_t|y_{&lt;t},X,G)$，即将图信息 $G$ 加入到概率分布的计算中。</p>
 <p>在信息读取时，根据每个输入的词 $x$，找到常识知识图谱中对应的子图（若没有对应的子图，则会生成一个特殊的图 <em>Not_A_Fact</em>），每个子图又包含若干三元组。</p>
 <p><strong>2. 知识编译模块（Knowledge Interpreter）</strong></p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f5.png" data-index="4" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f5.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f5.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f5.png" data-index="4"></div>
 
 <p>如图所示，当编译到”rays”时，会把这个词在知识图谱中相关的子图得到，并生成子图向量。每一个子图都包含了key entity（即这里的”rays”），以及这个”rays”的邻居实体和相连关系。</p>
 <p>对于词”of”，由于无法找到对应子图，所以就采用特殊子图 <em>Not_A_Fact</em> 来编译。之后采用基于静态注意力机制，CCM会将子图映射为向量，然后把词向量 $w(x_t)$ 和 $g_i$ 拼接作为encoder中GRU的输入。</p>
 <p>对于静态图注意力机制，CCM将子图中所有三元组 $k_n=(h_n, r_n, t_n)$ 考虑进来：</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f6.png" data-index="5" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f6.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f6.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f6.png" data-index="5"></div>
 
 <p>其中三元组 $k_n=(h_n, r_n, t_n)$ 选用<strong>TranE</strong>进行embedding。</p>
 <p><strong>3. 知识生成模块（Knowledge Aware Generator）</strong></p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f7.png" data-index="6" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f7.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f7.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f7.png" data-index="6"></div>
 
 <p>在生成时，不同于静态图注意力机制，模型会读取所有相关的子图，而不是当前词对应的子图，并计算decoder state $s_t$ 时使用每一个子图 $g_i$ 的概率：</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f8.png" data-index="7" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f8.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f8.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f8.png" data-index="7"></div>
 
 <p>之后模型会计算选择decoder state $s_t$ 时每个子图 $g_i$ 中选择一个三元组 $k_j$ 来生成单词的概率：</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f9.png" data-index="8" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f9.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f9.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f9.png" data-index="8"></div>
 
 <p>生成时，会根据计算结果，来选择是生成通用字（generic word）还是子图中的实体：</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f10.png" data-index="9" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f10.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f10.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f10.png" data-index="9"></div>
 
 <p><strong>4. 损失函数</strong></p>
 <p>损失函数为预期输出与实际输出的交叉熵，除此之外，为了监控选择通用词还是实体的概率，又增加了一个交叉熵：</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f11.png" data-index="10" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f11.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f11.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f11.png" data-index="10"></div>
 
 <blockquote>
 <p><strong>Experiment</strong></p>
@@ -248,14 +248,14 @@
 <p>而选用metric的时候，采用了刻画回复内容是否语法正确且贴近主题的perplexity，以及有多少知识图谱实体被生成的entity score。</p>
 <p><strong>实验结果</strong></p>
 <p>如下图所示为根据perplexity和entity score进行的性能比较，可见CCM的perplexity最低，且选取entity的数量最多。并且，在低频词时，选用的entity更多，这表示在训练时比较罕见的词（实体）会需要更多的背景知识来生成答复。</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f12.png" data-index="11" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f12.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f12.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f12.png" data-index="11"></div>
 
 <p>另外，作者还采用crowdsourcing的方式来人为审核response的质量，并采用了两种度量值：appropriateness（内容是否语法正确，是否与主题相关，是否有逻辑）和 informativeness（内容是否提供了post之外的新信息）。</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f13.png" data-index="12" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f13.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f13.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f13.png" data-index="12"></div>
 
 <p>从上图可见，CCM对于三个基线系统来说，都有将近60%的回复是更优的。并且在OOV数据集上，CCM比seq2seq不知道高到哪里去了，这是由于CCM对于这些低频词或未登录词，可以用知识图谱去补全，而seq2seq没有这样的知识来源。</p>
 <p>如下图所示，当在post中遇到未登录词”breakable”时，seq2seq和MemNet都只能输出一些通用的、模棱两可的、毫无信息量的回复。CopyNet能够利用知识图谱输出一些东西，但是并不合适。而CCM却可以输出一个合理的回复。</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f14.png" data-index="13" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f14.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f14.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f14.png" data-index="13"></div>
 
 <p><br></p>
 <h1 id="Knowledge-Diffusion-for-Neural-Dialogue-Generation"><a href="#Knowledge-Diffusion-for-Neural-Dialogue-Generation" class="headerlink" title="Knowledge Diffusion for Neural Dialogue Generation"></a>Knowledge Diffusion for Neural Dialogue Generation</h1><p><a href="http://aclweb.org/anthology/P18-1138" target="_blank" rel="noopener">http://aclweb.org/anthology/P18-1138</a></p>
@@ -266,7 +266,7 @@
 <ol>
 <li><strong><em>facts matching</em></strong>： 尽管有些对话是与facts相关的询问（inquiries），即主体和关系可以很容易被识别出来，但是对于某些对话，主体和关系是难以捉摸的，给准确的facts matching造成麻烦。下图展示了一个示例：Item 1 和 2 都在谈论电影”Titanic”，其中item 1是个典型的问答式对话，而item 2则是一个知识相关的没有任何显式关系的聊天式对话（chit-chat）。在item 2中去定义准确的fact match是非常困难的。</li>
 </ol>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f15.png" data-index="14" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f15.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f15.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f15.png" data-index="14"></div>
 
 <ol>
 <li><strong><em>entity diffusion</em></strong>：另一个显著的现象是，对话常常会从一个实体转移到另一个实体。如item 3 和 4 都和实体”Titanic”有关，然而回复中的实体都是其他的类似的电影。像这样的发散式关系，能够在现有的知识图谱三元组中去捕捉到它们的情况是十分罕见的。</li>
@@ -276,7 +276,7 @@
 <p><strong>Model</strong></p>
 </blockquote>
 <p><strong>Overview</strong></p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f16.png" data-index="15" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f16.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f16.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f16.png" data-index="15"></div>
 
 <p>论文构建了一个多轮对话（Multi-turn）模型。模型由四部分组成：</p>
 <ol>
@@ -289,41 +289,41 @@
 <p>为了捕捉不同层面的信息，作者通过两个独立的RNN来学习utterance的表示，得到两个隐藏状态序列：<br>$H^C=(h_1^C, h_2^C, …, h_{Nx}^C)$ 和 $H^K=(h_1^K, h_2^K, …, h_{Nx}^K)$ 。<br>$h_{Nx}^C$ 作为之后用来追踪对话状态的上下文RNN的输入；$h_{Nx}^K$ 应用在knowledge retriever中，用来将知识实体关系编码进输入的utterance。上图 $X_1$ 中”director”和”Titanic”就是knowledge elements。</p>
 <p><strong>2. Knowledge Retriver</strong></p>
 <p>Knowledge retriever从知识库中抽取固定数量的facts并指出它们的重要程度。</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f17.png" data-index="16" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f17.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f17.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f17.png" data-index="16"></div>
 
 <ol>
 <li><strong>Facts Matching</strong></li>
 </ol>
 <p>给定一个input utterance $X$，通过字符串匹配（string matching）、实体链接（entity linking）或命名实体识别（named entity recognition）来从知识库和对话历史中抽取$N_f$个相关facts $F = \{f_1,f_2,…,f_{N_f}\}$。$F$ 中的每个triplet的embedding通过简单地将entities和relation的embedding取均值得到 $h_f = \{h_{f_1},h_{f_2},…,h_{f_{N_f}}\}$。</p>
 <p>之后计算每个fact和input utterance之间的相关系数（范围从0到1）：</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f18.png" data-index="17" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f18.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f18.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f18.png" data-index="17"></div>
 
 <p>对于多轮对话，出现在之前的utterance的实体也会继承并保存在 $F$ 中。作者通过加权平均来计算相关事实表示（<em>relevant fact representation</em>） $C^f$:</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f19.png" data-index="18" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f19.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f19.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f19.png" data-index="18"></div>
 
 <ol>
 <li><strong>Entity Diffusion</strong></li>
 </ol>
 <p>作者计算了知识库中的所有实体（除了已经在之前的utterance出现过的实体）与相关fact的相似系数 $r^e$（范围从0到1）：</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f20.png" data-index="19" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f20.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f20.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f20.png" data-index="19"></div>
 
 <p>这里$e^k$是entity embedding。得分最高的$N_e$个实体被视作相似实体。相似实体表示（<em>similar entity representation</em>）$C^s$：</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f21.png" data-index="20" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f21.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f21.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f21.png" data-index="20"></div>
 
 <p><strong>3. Context RNN</strong></p>
 <p>Context RNN 记录了utterance (sentence) level对话状态。Context RNN考虑了utterance表示和知识表示。</p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f22.png" data-index="21" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f22.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f22.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f22.png" data-index="21"></div>
 
 <p><strong>4. Decoder</strong></p>
 <script type="math/tex; mode=display">C=[h_t^T, C^f, C^s]</script><script type="math/tex; mode=display">R=[r^f, r^e]</script><ol>
 <li><strong>Vanilla decoder</strong> 仅通过 $C$, $R$ 产生response $Y$：</li>
 </ol>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f23.png" data-index="22" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f23.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f23.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f23.png" data-index="22"></div>
 
 <ol>
 <li><strong>Probabilistic gated decoder</strong> 使用了一个门控变量 $z_t$ 来表明位于第t个位置的词应该从普通词中产生还是从知识实体中产生：</li>
 </ol>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f24.png" data-index="23" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f24.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f24.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f24.png" data-index="23"></div>
 
 <p>其中 $p(z_t|s_t;\theta)$ 通过逻辑回归来计算；$p(y_t|R,z_t=1;\theta)$ 近似于知识项（knowledge items）的相关系数。</p>
 <p>考虑到在生成回复中，如果一个实体被反复使用，生成的回复的多样性将会减小。因此，当一个知识项出现在回复中时，其相应的相关系数应该减小，以避免一个item出现多次。为此，作者提出了两种范围追踪机制（coverage tracking mechanisms）：1） <strong><em>Mask coefficient tracker</em></strong> 直接将出现的item的系数减少到0来保证其不会在回复中再次出现；2） <strong><em>Coeffient attenuation tracker</em></strong> ：</p>
@@ -351,9 +351,9 @@
 </li>
 </ul>
 <p><strong>Result</strong></p>
-<div align="center"><img width="400" class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f25.png" data-index="24" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f25.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f25.png" width="400" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f25.png" data-index="24"></div>
 
-<div align="center"><img width="400" class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f26.png" data-index="25" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f26.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f26.png" width="400" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f26.png" data-index="25"></div>
 
 <p><br></p>
 <h1 id="Mem2Seq-Effective-Incorporating-Knowledge-Based-into-End-to-End-Task-Orient-Dialog-Systems"><a href="#Mem2Seq-Effective-Incorporating-Knowledge-Based-into-End-to-End-Task-Orient-Dialog-Systems" class="headerlink" title="Mem2Seq: Effective Incorporating Knowledge Based into End-to-End Task-Orient Dialog Systems"></a>Mem2Seq: Effective Incorporating Knowledge Based into End-to-End Task-Orient Dialog Systems</h1><p><a href="https://arxiv.org/pdf/1804.08217.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1804.08217.pdf</a></p>
@@ -367,7 +367,7 @@
 <blockquote>
 <p><strong>Model</strong></p>
 </blockquote>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f27.png" data-index="26" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f27.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f27.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f27.png" data-index="26"></div>
 
 <p>模型由两部分组成：MemNN encoder生成对话历史的向量表示；memory decoder从记忆中读取和copy来生成回复。</p>
 <p>对话历史定义为一个tokens序列：$X = \{ x_1, \dots, x_n, sentinel \}$ , $sentinel$ 是一个标志字符；</p>
@@ -399,11 +399,11 @@ n+l+1 \,\,\,\, otherwise
 <p><strong>Detail</strong></p>
 <p>使用Adam optimizer，学习率在1e-3到1e-4之间。MemNN采用了hops K =  1, 3, 6三种来对比实验。Dropout rate在0.1到0.4之间，同时还将部分输入word mask成unknown token来模拟OOV情况。</p>
 <p><strong>Result</strong></p>
-<div align="center"><img class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f28.png" data-index="27" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f28.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f28.png" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f28.png" data-index="27"></div>
 
-<div align="center"><img width="400" class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f29.png" data-index="28" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f29.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f29.png" width="400" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f29.png" data-index="28"></div>
 
-<div align="center"><img width="400" class="post-img b-lazy" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f30.png" data-index="29" data-src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f30.png"></div>
+<div align="center"><img src="/img/knowledge-based-text-generation/knowledge-based-text-generation-f30.png" width="400" class="post-img" data-img="/img/knowledge-based-text-generation/knowledge-based-text-generation-f30.png" data-index="29"></div>
 
                 </article>
                 <ul class="tags-postTags">
@@ -690,12 +690,6 @@ n+l+1 \,\,\,\, otherwise
 
 
 
-
-<script>
-    document.getElementById('scriptLoad').addEventListener('load', function () {
-        var bLazy = new Blazy()
-    })
-</script>
 
 
 
