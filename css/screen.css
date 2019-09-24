@@ -22,7 +22,8 @@ body {
 	line-height: 2rem;
 	font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
 
-	color: var(--body-color);
+	/*color: var(--body-color);*/
+	color: #000000;
 	background: var(--body-bg);
 
 	-moz-font-feature-settings: "liga" on;
